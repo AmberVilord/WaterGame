@@ -45,6 +45,7 @@
 			max-height: calc(100dvh - 1.2rem);
 			background: rgba(255, 255, 255, 0.9);
 			border: 0;
+			border-bottom: 3px solid rgba(0, 0, 0, 0.45);
 			border-radius: 16px;
 			overflow: hidden;
 			box-shadow: 0 12px 24px rgba(17, 76, 122, 0.16);
@@ -311,10 +312,11 @@
 			left: 44%;
 			width: clamp(115px, 15vw, 170px);
 			height: clamp(58px, 8vw, 82px);
-			background: radial-gradient(132% 104% at 50% 38%, #8f9cad 0%, #738090 58%, #515c6a 100%);
+			background: #677588;
 			border-radius: 999px;
 			border: none;
-			box-shadow: inset 0 -12px 0 #3f4b59, inset 0 6px 10px #8d9aaa, 0 7px 14px rgba(28, 35, 44, 0.3);
+			box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.55);
+			overflow: visible;
 			z-index: 8;
 			cursor: grab;
 			touch-action: none;
@@ -327,15 +329,16 @@
 		.cloud::after {
 			content: "";
 			position: absolute;
-			background: radial-gradient(118% 98% at 50% 38%, #93a0b0 0%, #778494 60%, #556172 100%);
+			background: #677588;
 			border-radius: 50%;
 			opacity: 1;
 			filter: none;
 			mix-blend-mode: normal;
+			z-index: -1;
 		}
 
-		.cloud::before { width: 60%; height: 90%; left: 2%; top: -31%; }
-		.cloud::after { width: 56%; height: 86%; right: 2%; top: -30%; }
+		.cloud::before { width: 44%; height: 70%; left: 12%; top: -28%; }
+		.cloud::after { width: 62%; height: 92%; right: 1%; top: -38%; }
 
 		@keyframes cloud-drift {
 			0% { transform: translateX(0); }
@@ -380,6 +383,19 @@
 			pointer-events: none;
 			z-index: 2;
 			overflow: hidden;
+		}
+
+		.sun {
+			position: absolute;
+			left: 82%;
+			top: 9%;
+			width: clamp(42px, 5vw, 62px);
+			height: clamp(42px, 5vw, 62px);
+			border-radius: 50%;
+			background: radial-gradient(circle at 34% 30%, #fff8bf 0%, #ffe176 40%, #f7c53e 72%, #e6ad27 100%);
+			box-shadow: 0 0 0 8px rgba(255, 226, 128, 0.26), 0 0 22px rgba(255, 215, 98, 0.45);
+			pointer-events: none;
+			z-index: 2;
 		}
 
 		.mountain {
@@ -730,7 +746,7 @@
 			position: absolute;
 			inset: 0;
 			pointer-events: none;
-			z-index: 1;
+			z-index: 45;
 			overflow: hidden;
 		}
 
@@ -742,6 +758,7 @@
 			opacity: 0.92;
 			border-radius: 2px;
 			animation: confetti-fall 5s linear forwards;
+			will-change: transform, opacity;
 		}
 
 		.pollution {
@@ -1289,7 +1306,7 @@
 			padding: 1rem 1.1rem;
 			text-align: center;
 			position: relative;
-			z-index: 2;
+			z-index: 3;
 		}
 
 		.end-card.win-celebration {
@@ -1715,6 +1732,7 @@
 
 			<div class="scene" id="scene">
 				<div class="sky-note" id="phaseMsg">Select a region to begin.</div>
+				<div class="sun" id="sun" aria-hidden="true"></div>
 				<div class="forest-ground" aria-hidden="true"></div>
 				<div class="road" aria-hidden="true"></div>
 				<div class="houses" id="houses" aria-hidden="true">
@@ -1791,9 +1809,9 @@
 
 				<div class="status-msg" id="statusMsg">Tap or drag the cloud to direct rain.</div>
 				<div class="scene-popup" id="scenePopup" aria-live="polite"></div>
+				<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
 				<div class="end-overlay" id="endOverlay" aria-live="polite">
-					<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 					<div class="end-card">
 						<h2 id="endTitle">Region Result</h2>
 						<p id="endSummary"></p>
@@ -1848,6 +1866,7 @@
 
 		const scene = document.getElementById("scene");
 		const mountains = document.getElementById("mountains");
+		const sun = document.getElementById("sun");
 		const houses = document.getElementById("houses");
 		const riverWrap = document.getElementById("riverWrap");
 		const river = document.getElementById("river");
@@ -1901,7 +1920,9 @@
 				filterCooldownMs: { plant: 900, net: 1400 },
 				appearance: {
 					scene: "linear-gradient(180deg, #98d7ff 0%, #74c4ff 44%, #82d08e 45%, #72bf7d 100%)",
-					cloud: "linear-gradient(180deg, #7f8b9a 0%, #667180 58%, #525d6b 100%)",
+					sunLeft: "84%",
+					sunTop: "10%",
+					cloud: "#677588",
 					cloudShadow: "rgba(58, 67, 78, 0.88)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
 					riverTranslateY: "-18%",
@@ -1932,7 +1953,9 @@
 				filterCooldownMs: { plant: 1050, net: 1650 },
 				appearance: {
 					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #5a9e60 45%, #3c7842 100%)",
-					cloud: "linear-gradient(180deg, #768290 0%, #5d6876 55%, #4b5563 100%)",
+					sunLeft: "14%",
+					sunTop: "9%",
+					cloud: "#677588",
 					cloudShadow: "rgba(51, 60, 70, 0.9)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
 					riverTranslateY: "15%",
@@ -1963,7 +1986,9 @@
 				filterCooldownMs: { plant: 1150, net: 1800 },
 				appearance: {
 					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #7db77a 45%, #6ea96a 59%, #5f9b5d 74%, #4f874f 88%, #437746 100%)",
-					cloud: "linear-gradient(180deg, #72808f 0%, #5b6675 56%, #495463 100%)",
+					sunLeft: "80%",
+					sunTop: "7%",
+					cloud: "#677588",
 					cloudShadow: "rgba(48, 57, 67, 0.9)",
 					riverOffsetTop: "calc(var(--grass-start) - 8%)",
 					riverTranslateY: "-20%",
@@ -2038,6 +2063,7 @@
 			pendingRegion: null,
 			allTrashPromptShown: false,
 			twistIntervalId: null,
+			lastDebrisSurgeAt: 0,
 			highScores: [],
 			pendingHighScoreValue: null
 		};
@@ -2129,9 +2155,18 @@
 
 		function startTwists() {
 			stopTwists();
+			state.lastDebrisSurgeAt = 0;
 			state.twistIntervalId = setInterval(() => {
 				if (state.gameEnded || !state.region) return;
 				if (state.phase === "rain" || state.phase === "idle") return;
+				if (state.timeLeft > 50) return;
+
+				const now = Date.now();
+				const rampSeconds = Math.max(0, 50 - state.timeLeft);
+				const requiredGapSeconds = Math.max(2, 12 - rampSeconds * 0.2);
+				if (now - state.lastDebrisSurgeAt < requiredGapSeconds * 1000) return;
+				state.lastDebrisSurgeAt = now;
+
 				const index = Math.floor(Math.random() * state.pollutionLevels.length);
 				state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + 12);
 				state.score = Math.max(0, state.score - 4);
@@ -2142,7 +2177,7 @@
 				setStatus("Twist: debris surge added pollution. React quickly to recover quality.");
 				recalcQuality();
 				updateHUD();
-			}, 14000);
+			}, 1000);
 		}
 
 		function updateHUD() {
@@ -2185,7 +2220,7 @@
 			for (let i = 0; i < 220; i += 1) {
 				const piece = document.createElement("span");
 				piece.className = "confetti-piece";
-				piece.style.left = `${Math.random() * 100}%`;
+				piece.style.left = `${-4 + Math.random() * 108}%`;
 				piece.style.background = colors[i % colors.length];
 				piece.style.animationDelay = `${Math.random() * 0.7}s`;
 				piece.style.animationDuration = `${4.4 + Math.random() * 1.2}s`;
@@ -2617,7 +2652,7 @@
 			endOverlay.style.display = "flex";
 			if (win) {
 				requestAnimationFrame(() => {
-					setTimeout(() => celebrateWin(), 120);
+					setTimeout(() => celebrateWin(), 260);
 				});
 			}
 		}
@@ -2659,6 +2694,7 @@
 			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
 			state.phase = "rain";
 			state.allTrashPromptShown = false;
+			state.lastDebrisSurgeAt = 0;
 			while (plantedTrees.length) {
 				const planted = plantedTrees.pop();
 				planted.remove();
@@ -2697,6 +2733,8 @@
 			if (!state.region) return;
 			const theme = state.region.appearance;
 			scene.style.background = theme.scene;
+			sun.style.left = theme.sunLeft || "82%";
+			sun.style.top = theme.sunTop || "9%";
 			scene.classList.toggle("river-bank-mode", state.regionKey === "riverBank");
 			scene.classList.toggle("wetland-mode", state.regionKey === "wetlandValley");
 			scene.classList.toggle("forest-creek-mode", state.regionKey === "forestCreek");
@@ -2707,7 +2745,7 @@
 			riverWrap.style.transform = theme.riverTransform || `translateX(-50%) translateY(${theme.riverTranslateY || "0%"})`;
 			riverWrap.style.width = theme.riverWidth || "min(95%, 900px)";
 			cloud.style.background = theme.cloud;
-			cloud.style.boxShadow = `inset 0 -10px 0 ${theme.cloudShadow}`;
+			cloud.style.boxShadow = "none";
 			river.style.height = theme.riverShape.height;
 			river.style.borderRadius = theme.riverShape.borderRadius;
 			river.style.transform = theme.riverShape.transform;
