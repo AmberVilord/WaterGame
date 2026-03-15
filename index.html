@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>River Guardians</title>
+	<style>
+		:root {
+			--cw-yellow: #ffc907;
+			--cw-blue: #2e9df7;
+			--cw-deep: #114c7a;
+			--ink: #08304b;
+			--card: #ffffff;
+			--good: #2ebf7e;
+			--warn: #b77835;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+			background: linear-gradient(180deg, #eef9ff 0%, #bce6ff 50%, #93d1ff 100%);
+			color: var(--ink);
+			display: flex;
+			justify-content: center;
+			padding: 0.6rem;
+		}
+
+		.app {
+			width: min(1100px, 100%);
+			background: rgba(255, 255, 255, 0.9);
+			border: 3px solid var(--cw-blue);
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 12px 24px rgba(17, 76, 122, 0.16);
+		}
+
+		.menu {
+			min-height: 82vh;
+			display: grid;
+			place-items: center;
+			padding: 1.2rem;
+			background: linear-gradient(180deg, #f2fcff 0%, #d6f0ff 45%, #bfe3ff 100%);
+		}
+
+		.menu-card {
+			width: min(740px, 100%);
+			background: #ffffff;
+			border: 3px solid var(--cw-blue);
+			border-radius: 18px;
+			padding: 1.2rem;
+			text-align: center;
+			position: relative;
+		}
+
+		.instructions-overlay {
+			position: absolute;
+			inset: 0;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			background: rgba(6, 47, 72, 0.52);
+			z-index: 20;
+			border-radius: 14px;
+			padding: 0.7rem;
+		}
+
+		.instructions-card {
+			position: relative;
+			width: min(560px, 100%);
+			background: #fff;
+			border: 3px solid var(--cw-yellow);
+			border-radius: 14px;
+			padding: 0.95rem 0.9rem 0.8rem;
+			text-align: left;
+		}
+
+		.instructions-card h2 {
+			margin: 0;
+			font-size: 1.1rem;
+			color: var(--cw-deep);
+		}
+
+		.instructions-card p {
+			margin: 0.45rem 0 0;
+			font-weight: 700;
+			color: #2c4f63;
+		}
+
+		.instructions-list {
+			margin: 0.6rem 0 0;
+			padding-left: 1.05rem;
+			font-weight: 650;
+			line-height: 1.35;
+		}
+
+		.instructions-actions {
+			margin-top: 0.7rem;
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+		}
+
+		#startRegionFromInstructions {
+			background: var(--cw-blue);
+			color: #08304b;
+		}
+
+		.close-instructions {
+			position: absolute;
+			top: 0.3rem;
+			right: 0.3rem;
+			width: 34px;
+			height: 34px;
+			padding: 0;
+			border-radius: 8px;
+			font-size: 1.2rem;
+			line-height: 1;
+			background: #0e5b8f;
+		}
+
+		.logo {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.45rem;
+			background: #fff8dc;
+			border: 2px solid var(--cw-yellow);
+			border-radius: 999px;
+			padding: 0.3rem 0.8rem;
+			font-weight: 800;
+			margin-bottom: 0.8rem;
+		}
+
+		.logo .mark {
+			width: 24px;
+			height: 24px;
+			border-radius: 6px;
+			background: var(--cw-blue);
+			display: grid;
+			place-items: center;
+			color: #fff;
+			font-size: 14px;
+		}
+
+		h1 {
+			margin: 0;
+			font-size: clamp(1.6rem, 4vw, 2.6rem);
+			color: var(--cw-deep);
+		}
+
+		.subtitle {
+			margin: 0.45rem 0 1rem;
+			font-weight: 700;
+			color: #254d66;
+			font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+		}
+
+		.region-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(140px, 1fr));
+			gap: 0.7rem;
+			margin-top: 0.7rem;
+		}
+
+		.region-btn {
+			border: 2px solid var(--cw-blue);
+			background: #f6fcff;
+			border-radius: 12px;
+			padding: 0.8rem;
+			font-weight: 800;
+			color: var(--ink);
+			cursor: pointer;
+			min-height: 64px;
+		}
+
+		.region-btn:hover,
+		.region-btn:focus-visible {
+			background: #d7efff;
+			outline: none;
+		}
+
+		.hint {
+			margin-top: 0.7rem;
+			font-weight: 600;
+			color: #3c6178;
+		}
+
+		.hidden { display: none !important; }
+
+		.topbar {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.55rem;
+			padding: 0.7rem 0.85rem;
+			background: linear-gradient(90deg, var(--cw-yellow), #ffe381);
+			border-bottom: 3px solid var(--cw-blue);
+		}
+
+		.top-title {
+			font-weight: 900;
+			color: #1d2d3a;
+		}
+
+		.hud {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.45rem;
+			align-items: center;
+		}
+
+		.pill {
+			background: #fff;
+			border: 2px solid var(--cw-blue);
+			border-radius: 999px;
+			padding: 0.28rem 0.6rem;
+			font-size: 0.9rem;
+			font-weight: 800;
+			min-width: 96px;
+			text-align: center;
+		}
+
+		.actions {
+			display: flex;
+			gap: 0.4rem;
+			margin-left: auto;
+		}
+
+		button {
+			border: 0;
+			border-radius: 10px;
+			padding: 0.5rem 0.8rem;
+			min-height: 38px;
+			cursor: pointer;
+			font-weight: 800;
+			background: var(--cw-deep);
+			color: #fff;
+		}
+
+		#backToMenuBtn { background: #1f587f; }
+
+		.scene {
+			position: relative;
+			min-height: 74vh;
+			overflow: hidden;
+			background: linear-gradient(180deg, #8fd5ff 0%, #69bdff 45%, #68c87f 46%, #62ba74 100%);
+		}
+
+		.sky-note {
+			position: absolute;
+			left: 0.55rem;
+			top: 0.55rem;
+			z-index: 10;
+			background: rgba(255, 255, 255, 0.9);
+			border: 2px solid var(--cw-blue);
+			border-radius: 10px;
+			padding: 0.35rem 0.6rem;
+			font-size: 0.88rem;
+			font-weight: 700;
+			max-width: min(560px, calc(100% - 1.1rem));
+		}
+
+		.cloud {
+			position: absolute;
+			top: 14%;
+			left: 44%;
+			width: clamp(115px, 15vw, 170px);
+			height: clamp(58px, 8vw, 82px);
+			background: #f8fcff;
+			border-radius: 999px;
+			box-shadow: inset 0 -10px 0 rgba(196, 228, 247, 0.85);
+			z-index: 8;
+			cursor: grab;
+			touch-action: none;
+			user-select: none;
+		}
+
+		.cloud::before,
+		.cloud::after {
+			content: "";
+			position: absolute;
+			background: inherit;
+			border-radius: 50%;
+		}
+
+		.cloud::before { width: 40%; height: 70%; left: 12%; top: -30%; }
+		.cloud::after { width: 32%; height: 56%; right: 16%; top: -26%; }
+
+		.mountains {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 45%;
+			height: 55%;
+			display: none;
+			pointer-events: none;
+			z-index: 2;
+			overflow: hidden;
+		}
+
+		.mountain {
+			position: absolute;
+			bottom: 0;
+			clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+			background: linear-gradient(180deg, #8fa6b4 0%, #6f8797 38%, #546b79 72%, #465b69 100%);
+			filter: drop-shadow(0 8px 12px rgba(35, 63, 82, 0.18));
+		}
+
+		.mountain::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(115deg, rgba(255, 255, 255, 0.28) 0 36%, rgba(45, 66, 83, 0.14) 36% 62%, rgba(26, 42, 58, 0.3) 62% 100%);
+			clip-path: inherit;
+		}
+
+		.mountain::after {
+			content: "";
+			position: absolute;
+			left: 50%;
+			top: 5%;
+			transform: translateX(-50%);
+			width: 30%;
+			height: 14%;
+			background: rgba(255, 255, 255, 0.85);
+			clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+		}
+
+		.m1 { left: -8%; width: 30%; height: 68%; }
+		.m2 { left: 10%; width: 38%; height: 100%; }
+		.m3 { left: 37%; width: 31%; height: 74%; }
+		.m4 { right: -2%; width: 34%; height: 84%; }
+
+		.river-wrap {
+			position: absolute;
+			bottom: 7%;
+			left: 50%;
+			transform: translateX(-50%);
+			width: min(95%, 900px);
+			z-index: 4;
+		}
+
+		.river {
+			position: relative;
+			width: 100%;
+			height: clamp(170px, 25vw, 250px);
+			border-radius: 42% 58% 63% 37% / 54% 39% 61% 46%;
+			background: radial-gradient(circle at 45% 36%, #7bb8d3 0%, #4d86a2 68%, #325e75 100%);
+			border: 5px solid rgba(255, 255, 255, 0.72);
+			box-shadow: inset 0 -18px 0 rgba(7, 53, 83, 0.4), 0 10px 16px rgba(9, 55, 86, 0.23);
+			overflow: hidden;
+			transform: rotate(-1.4deg);
+			transform-origin: center;
+			transition: border-radius 0.3s ease, transform 0.3s ease, height 0.3s ease;
+		}
+
+		.flow {
+			position: absolute;
+			inset: 0;
+			background: repeating-linear-gradient(
+				105deg,
+				rgba(255, 255, 255, 0.08) 0 10px,
+				rgba(255, 255, 255, 0.18) 10px 18px,
+				rgba(255, 255, 255, 0.08) 18px 28px
+			);
+			animation: flow 2.6s linear infinite;
+			opacity: 0.45;
+		}
+
+		.pollution {
+			position: absolute;
+			width: clamp(30px, 4vw, 46px);
+			height: clamp(30px, 4vw, 46px);
+			border-radius: 50%;
+			background: radial-gradient(circle at 35% 35%, #a76f43 0%, #6f4628 70%, #4e2f1a 100%);
+			opacity: 0;
+			transform: scale(0.9);
+			transition: opacity 0.22s ease, transform 0.22s ease;
+			border: 2px solid rgba(255, 255, 255, 0.45);
+			z-index: 6;
+		}
+
+		.pollution.active {
+			opacity: 0.9;
+			transform: scale(1);
+		}
+
+		.pollution.cleaning {
+			animation: swirl 0.45s linear infinite;
+		}
+
+		.p1 { left: 16%; top: 52%; }
+		.p2 { left: 38%; top: 33%; }
+		.p3 { left: 60%; top: 56%; }
+		.p4 { left: 78%; top: 39%; }
+
+		.animal {
+			position: absolute;
+			width: clamp(34px, 4.8vw, 52px);
+			height: clamp(20px, 2.8vw, 30px);
+			border-radius: 999px;
+			background: #6ea4c4;
+			filter: grayscale(1) saturate(0.3);
+			opacity: 0.64;
+			transition: transform 0.2s ease, filter 0.22s ease, opacity 0.22s ease;
+			pointer-events: none;
+			z-index: 7;
+			animation: var(--route-animation);
+		}
+
+		.animal::before,
+		.animal::after {
+			content: "";
+			position: absolute;
+		}
+
+		.animal-fish {
+			width: clamp(40px, 5.4vw, 60px);
+			height: clamp(18px, 2.5vw, 28px);
+			background: linear-gradient(90deg, #8fd0ec 0%, #5eaed4 35%, #3b8dbe 100%);
+			box-shadow: inset 0 -3px 0 rgba(21, 74, 104, 0.18);
+		}
+
+		.animal-fish::before {
+			right: -13px;
+			top: 4px;
+			width: 16px;
+			height: 15px;
+			background: inherit;
+			clip-path: polygon(0 50%, 100% 0, 100% 100%);
+			animation: tail-flick 0.45s ease-in-out infinite;
+		}
+
+		.animal-fish::after {
+			left: 7px;
+			top: 6px;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: radial-gradient(circle at 30% 30%, #fff 0%, #1e3c4d 55%, #142733 100%);
+		}
+
+		.animal-fish.gold {
+			background: linear-gradient(90deg, #f7d47b 0%, #dfab45 38%, #ba7f21 100%);
+		}
+
+		.lily-pad {
+			position: absolute;
+			width: clamp(36px, 5vw, 54px);
+			height: clamp(24px, 3.3vw, 36px);
+			border-radius: 48% 52% 46% 54%;
+			background: radial-gradient(circle at 35% 35%, #6fc16e 0%, #41974a 70%, #2e7036 100%);
+			box-shadow: inset -4px -4px 0 rgba(22, 84, 32, 0.28);
+			z-index: 6;
+			animation: pad-drift 5s ease-in-out infinite;
+		}
+
+		.lily-pad::after {
+			content: "";
+			position: absolute;
+			right: 2px;
+			top: 11px;
+			width: 14px;
+			height: 10px;
+			background: #2f8036;
+			clip-path: polygon(0 50%, 100% 0, 100% 100%);
+		}
+
+		.animal-frog {
+			width: clamp(28px, 3.9vw, 40px);
+			height: clamp(20px, 2.9vw, 29px);
+			background: radial-gradient(circle at 50% 35%, #79c86e 0%, #4f9f50 65%, #387d3f 100%);
+			box-shadow: inset 0 -3px 0 rgba(26, 85, 31, 0.2);
+			animation: var(--route-animation);
+		}
+
+		.animal-frog::before {
+			top: -4px;
+			left: 4px;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: #eef8df;
+			box-shadow: 14px 0 0 #eef8df;
+		}
+		.animal-frog::after {
+			top: 7px;
+			left: 9px;
+			width: 4px;
+			height: 4px;
+			border-radius: 50%;
+			background: #1f2d21;
+			box-shadow: 10px 0 0 #1f2d21;
+		}
+
+		.animal.distressed {
+			animation: distress 0.9s ease-in-out infinite;
+		}
+
+		.animal.ready {
+			pointer-events: auto;
+			cursor: pointer;
+			filter: none;
+			opacity: 1;
+			animation: bounce 1.6s ease-in-out infinite;
+		}
+
+		.animal.happy {
+			animation: lively 1.2s ease-in-out infinite;
+		}
+
+		.animal.rescued {
+			transform: scale(1.18);
+			animation: happy 0.6s ease;
+		}
+
+		.fish1 { left: 17%; top: 64%; --route-animation: orbit-a 8.5s ease-in-out infinite alternate; }
+		.fish2 { left: 48%; top: 54%; --route-animation: orbit-b 10s ease-in-out infinite alternate; }
+		.frog1 { left: 66%; top: 48%; --route-animation: pad-hop-a 5.6s ease-in-out infinite; }
+		.bird1 { left: 27%; top: 43%; --route-animation: pad-hop-b 6.2s ease-in-out infinite; }
+		.pad1 { left: 62%; top: 50%; }
+		.pad2 { left: 23%; top: 45%; animation-duration: 6s; }
+
+		.inventory {
+			position: absolute;
+			right: 0.6rem;
+			top: 4.7rem;
+			z-index: 12;
+			background: rgba(255, 255, 255, 0.94);
+			border: 2px solid var(--cw-blue);
+			border-radius: 12px;
+			padding: 0.45rem;
+			min-width: 174px;
+		}
+
+		.inventory h3 {
+			margin: 0;
+			font-size: 0.86rem;
+			color: var(--cw-deep);
+		}
+
+		.tool {
+			margin-top: 0.38rem;
+			width: 100%;
+			border: 2px dashed var(--cw-blue);
+			background: #f5fbff;
+			color: var(--ink);
+			text-align: left;
+			padding: 0.45rem;
+			border-radius: 9px;
+			cursor: grab;
+			font-weight: 700;
+			font-size: 0.85rem;
+		}
+
+		.tool.ready {
+			border-style: solid;
+			background: #ebf7ff;
+		}
+
+		.tool[disabled] {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+
+		.float {
+			position: absolute;
+			z-index: 30;
+			font-weight: 900;
+			color: #08304b;
+			text-shadow: 0 1px 0 #fff;
+			pointer-events: none;
+			animation: float-up 0.8s ease forwards;
+		}
+
+		.rain {
+			position: absolute;
+			width: 3px;
+			height: 16px;
+			border-radius: 999px;
+			background: linear-gradient(180deg, #d9f3ff, #3da9f7);
+			z-index: 9;
+			animation: rain-fall 0.7s linear forwards;
+			pointer-events: none;
+		}
+
+		.status-msg {
+			position: absolute;
+			right: 0.6rem;
+			bottom: 0.6rem;
+			z-index: 14;
+			max-width: min(430px, calc(100% - 1.2rem));
+			background: rgba(6, 47, 72, 0.89);
+			color: #fff;
+			border-radius: 10px;
+			padding: 0.42rem 0.6rem;
+			font-size: 0.9rem;
+			font-weight: 700;
+		}
+
+		.vegetation {
+			position: absolute;
+			left: 50%;
+			bottom: 3.5%;
+			transform: translateX(-50%);
+			width: min(92%, 880px);
+			display: flex;
+			justify-content: space-between;
+			font-size: clamp(1.2rem, 2.7vw, 2rem);
+			opacity: 0.2;
+			filter: saturate(0.6);
+			pointer-events: none;
+			z-index: 2;
+			transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+		}
+
+		.forest-ring {
+			position: absolute;
+			left: 50%;
+			bottom: 2%;
+			transform: translateX(-50%);
+			width: min(112%, 1040px);
+			height: min(48vh, 380px);
+			display: none;
+			pointer-events: none;
+			z-index: 1;
+			overflow: visible;
+		}
+
+		.tree {
+			position: absolute;
+			width: clamp(112px, 13vw, 182px);
+			height: min(48vh, 380px);
+			flex: 0 0 auto;
+		}
+
+		.tree::before {
+			content: "";
+			position: absolute;
+			left: 50%;
+			bottom: 0;
+			transform: translateX(-50%);
+			width: clamp(10px, 1.2vw, 16px);
+			height: 30%;
+			border-radius: 4px;
+			background: linear-gradient(180deg, #6b4529, #4e321d);
+			box-shadow: 0 0 0 1px rgba(47, 28, 15, 0.18);
+		}
+
+		.tree::after {
+			content: "";
+			position: absolute;
+			left: 50%;
+			bottom: 18%;
+			transform: translateX(-50%);
+			width: 100%;
+			height: 72%;
+			background: linear-gradient(180deg, #335f32, #224a26);
+			clip-path: polygon(50% 0%, 95% 40%, 76% 40%, 100% 68%, 72% 68%, 90% 100%, 10% 100%, 28% 68%, 0% 68%, 24% 40%, 5% 40%);
+			filter: drop-shadow(0 8px 4px rgba(18, 43, 20, 0.15));
+		}
+
+		.tree.tall {
+			height: min(52vh, 410px);
+			width: clamp(124px, 14vw, 194px);
+		}
+
+		.tree.short {
+			height: min(37vh, 290px);
+			width: clamp(92px, 10vw, 150px);
+		}
+
+		.tree.offset-down {
+			transform: translateY(14px);
+		}
+
+		.tree.offset-up {
+			transform: translateY(-10px);
+		}
+
+		.forest-ring .tree:nth-child(1) {
+			left: 6%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(2) {
+			left: 22%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(3) {
+			left: 38%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(4) {
+			right: 38%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(5) {
+			right: 22%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(6) {
+			right: 6%;
+			bottom: 0;
+		}
+
+		.forest-ring .tree:nth-child(7) {
+			display: none;
+		}
+
+		.scene.thriving .vegetation {
+			opacity: 1;
+			filter: saturate(1.25);
+			transform: translateX(-50%) scale(1.03);
+		}
+
+		.end-overlay {
+			position: absolute;
+			inset: 0;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 40;
+			background: rgba(4, 39, 59, 0.64);
+			padding: 1rem;
+		}
+
+		.end-card {
+			width: min(620px, 100%);
+			background: #fff;
+			border: 3px solid var(--cw-yellow);
+			border-radius: 14px;
+			padding: 1rem 1.1rem;
+			text-align: center;
+		}
+
+		.end-card h2 {
+			margin: 0;
+			font-size: clamp(1.2rem, 3vw, 2rem);
+			color: var(--cw-deep);
+		}
+
+		.results-grid {
+			margin-top: 0.7rem;
+			display: grid;
+			grid-template-columns: repeat(2, minmax(130px, 1fr));
+			gap: 0.5rem;
+		}
+
+		.result-item {
+			background: #f4fbff;
+			border: 2px solid #b8ddf4;
+			border-radius: 10px;
+			padding: 0.45rem;
+			font-weight: 800;
+			font-size: 0.9rem;
+		}
+
+		.end-actions {
+			margin-top: 0.75rem;
+			display: flex;
+			gap: 0.55rem;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		@keyframes flow {
+			from { transform: translateX(0); }
+			to { transform: translateX(28px); }
+		}
+
+		@keyframes bounce {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-7px); }
+		}
+
+		@keyframes happy {
+			0% { transform: scale(0.95) rotate(-8deg); }
+			100% { transform: scale(1.18) rotate(0deg); }
+		}
+
+		@keyframes lively {
+			0%, 100% { transform: translateY(0) scale(1); }
+			50% { transform: translateY(-8px) scale(1.05); }
+		}
+
+		@keyframes distress {
+			0%, 100% { transform: translateY(0) rotate(0deg); }
+			25% { transform: translateY(2px) rotate(-5deg); }
+			75% { transform: translateY(-1px) rotate(5deg); }
+		}
+
+		@keyframes swim {
+			0%, 100% { transform: translateX(0); }
+			50% { transform: translateX(-8px); }
+		}
+
+		@keyframes orbit-a {
+			0% { transform: translate(0, 0) scaleX(1); }
+			25% { transform: translate(34px, -10px) scaleX(1); }
+			50% { transform: translate(70px, 12px) scaleX(1); }
+			75% { transform: translate(24px, 20px) scaleX(-1); }
+			100% { transform: translate(-12px, 8px) scaleX(-1); }
+		}
+
+		@keyframes orbit-b {
+			0% { transform: translate(0, 0) scaleX(-1); }
+			25% { transform: translate(-38px, 16px) scaleX(-1); }
+			50% { transform: translate(-82px, -8px) scaleX(-1); }
+			75% { transform: translate(-24px, -22px) scaleX(1); }
+			100% { transform: translate(18px, 10px) scaleX(1); }
+		}
+
+		@keyframes pad-hop-a {
+			0%, 100% { transform: translate(0, 0); }
+			35% { transform: translate(8px, -6px); }
+			55% { transform: translate(12px, -12px); }
+			75% { transform: translate(5px, -4px); }
+		}
+
+		@keyframes pad-hop-b {
+			0%, 100% { transform: translate(0, 0); }
+			25% { transform: translate(-6px, -5px); }
+			50% { transform: translate(-10px, -10px); }
+			80% { transform: translate(-4px, -3px); }
+		}
+
+		@keyframes pad-drift {
+			0%, 100% { transform: translate(0, 0) rotate(0deg); }
+			50% { transform: translate(6px, -4px) rotate(-4deg); }
+		}
+
+		@keyframes tail-flick {
+			0%, 100% { transform: rotate(0deg); }
+			50% { transform: rotate(14deg); }
+		}
+
+		@keyframes hop {
+			0%, 100% { transform: translateY(0); }
+			45% { transform: translateY(-8px); }
+		}
+
+		@keyframes glide {
+			0%, 100% { transform: translateX(0) translateY(0); }
+			50% { transform: translateX(-6px) translateY(-6px); }
+		}
+
+		@keyframes flap {
+			0%, 100% { transform: rotate(0deg); }
+			50% { transform: rotate(-22deg); }
+		}
+
+		@keyframes float-up {
+			from { transform: translateY(0); opacity: 1; }
+			to { transform: translateY(-30px); opacity: 0; }
+		}
+
+		@keyframes rain-fall {
+			from { transform: translateY(0); opacity: 1; }
+			to { transform: translateY(230px); opacity: 0; }
+		}
+
+		@keyframes swirl {
+			from { transform: rotate(0deg) scale(1); }
+			to { transform: rotate(360deg) scale(0.9); }
+		}
+
+		@media (max-width: 900px) {
+			.region-grid { grid-template-columns: 1fr; }
+			.inventory {
+				left: 0.6rem;
+				right: auto;
+				top: auto;
+				bottom: 3.4rem;
+			}
+			.sky-note { font-size: 0.82rem; }
+		}
+
+		@media (max-width: 540px) {
+			.topbar { justify-content: center; }
+			.actions { margin-left: 0; width: 100%; }
+			.actions button { flex: 1; }
+			.pill { min-width: 86px; font-size: 0.82rem; }
+			.scene { min-height: 80vh; }
+			.results-grid { grid-template-columns: 1fr; }
+		}
+	</style>
+</head>
+<body>
+	<main class="app">
+		<section id="menuScreen" class="menu" aria-label="Main menu">
+			<div class="menu-card">
+				<div class="logo" aria-label="charity water logo">
+					<span class="mark">💧</span>
+					<span>charity: water</span>
+				</div>
+				<h1>River Guardians</h1>
+				<p class="subtitle">Navigating Water Systems for Global Impact.</p>
+				<div class="region-grid" id="regionGrid">
+					<button class="region-btn" data-region="riverBank" type="button">River Bank</button>
+					<button class="region-btn" data-region="wetlandValley" type="button">Wetland Valley</button>
+					<button class="region-btn" data-region="forestCreek" type="button">Forest Creek</button>
+				</div>
+				<p class="hint">Choose a region to activate gameplay and UI.</p>
+
+				<div class="instructions-overlay" id="instructionsOverlay" aria-live="polite">
+					<div class="instructions-card">
+						<button class="close-instructions" id="closeInstructionsBtn" type="button" aria-label="Close instructions">×</button>
+						<h2>Region Instructions</h2>
+						<p id="instructionsRegionLabel">Selected Region</p>
+						<ul class="instructions-list">
+							<li>Tap/drag cloud to direct rain and raise water quality.</li>
+							<li>When filters unlock, drag tools onto polluted spots.</li>
+							<li>Tools have limited charges and cooldowns, so place carefully.</li>
+							<li>Rescue animals once local water health crosses threshold.</li>
+							<li>Reach target quality with healthy wildlife before the timer runs out.</li>
+						</ul>
+						<div class="instructions-actions">
+							<button id="startRegionFromInstructions" type="button">Start Region</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="gameScreen" class="hidden" aria-label="River guardians gameplay">
+			<header class="topbar">
+				<div class="top-title" id="regionTitle">River Guardians</div>
+				<div class="hud" id="hud">
+					<div class="pill" id="scorePill">Score: 0</div>
+					<div class="pill" id="qualityPill">Quality: 0%</div>
+					<div class="pill" id="waterPill">Water: 0%</div>
+					<div class="pill" id="rainPill">Rain: 0</div>
+					<div class="pill" id="pollutionPill">Pollution: 100%</div>
+					<div class="pill" id="animalHealthPill">Animal Health: 0%</div>
+					<div class="pill" id="timePill">Time: 120s</div>
+					<div class="pill" id="targetPill">Target: 0%</div>
+				</div>
+				<div class="actions">
+					<button id="restartBtn" type="button">Restart Region</button>
+					<button id="backToMenuBtn" type="button">Region Select</button>
+				</div>
+			</header>
+
+			<div class="scene" id="scene">
+				<div class="sky-note" id="phaseMsg">Select a region to begin.</div>
+				<div class="mountains" id="mountains" aria-hidden="true">
+					<div class="mountain m1"></div>
+					<div class="mountain m2"></div>
+					<div class="mountain m3"></div>
+					<div class="mountain m4"></div>
+				</div>
+				<div id="cloud" class="cloud" role="button" aria-label="Rain cloud"></div>
+
+				<div class="river-wrap">
+					<div class="forest-ring" id="forestRing" aria-hidden="true">
+						<div class="tree tall"></div>
+						<div class="tree short offset-down"></div>
+						<div class="tree offset-up"></div>
+						<div class="tree tall"></div>
+						<div class="tree short offset-down"></div>
+						<div class="tree"></div>
+						<div class="tree tall offset-up"></div>
+					</div>
+					<div class="river" id="river">
+						<div class="flow" id="flow"></div>
+						<div class="pollution p1" data-spot="0"></div>
+						<div class="pollution p2" data-spot="1"></div>
+						<div class="pollution p3" data-spot="2"></div>
+						<div class="pollution p4" data-spot="3"></div>
+						<div class="lily-pad pad1"></div>
+						<div class="lily-pad pad2"></div>
+						<div class="animal animal-fish fish1" data-animal="fish"></div>
+						<div class="animal animal-fish gold fish2" data-animal="otter"></div>
+						<div class="animal animal-frog frog1" data-animal="frog"></div>
+						<div class="animal animal-frog bird1" data-animal="bird"></div>
+					</div>
+				</div>
+
+				<aside class="inventory" id="inventory">
+					<h3>Filter Inventory</h3>
+					<button class="tool" data-tool="plant" data-label="🌱 Plant Filter" draggable="true" disabled type="button">🌱 Plant Filter</button>
+					<button class="tool" data-tool="net" data-label="🕸️ Eco Net" draggable="true" disabled type="button">🕸️ Eco Net</button>
+				</aside>
+
+				<div class="vegetation" id="vegetation" aria-hidden="true">
+					<span>🌿</span><span>🌱</span><span>🍃</span><span>🌿</span><span>🌱</span>
+				</div>
+
+				<div class="status-msg" id="statusMsg">Tap or drag the cloud to direct rain.</div>
+
+				<div class="end-overlay" id="endOverlay" aria-live="polite">
+					<div class="end-card">
+						<h2 id="endTitle">Region Result</h2>
+						<p id="endSummary"></p>
+						<div class="results-grid">
+							<div class="result-item" id="resultQuality">Quality: 0%</div>
+							<div class="result-item" id="resultScore">Score: 0</div>
+							<div class="result-item" id="resultBonus">Bonus: 0</div>
+							<div class="result-item" id="resultAnimals">Animals Healthy: 0/4</div>
+						</div>
+						<div class="end-actions">
+							<button id="retryBtn" type="button">Retry Region</button>
+							<button id="endMenuBtn" type="button">Back to Region Select</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		const menuScreen = document.getElementById("menuScreen");
+		const gameScreen = document.getElementById("gameScreen");
+		const regionGrid = document.getElementById("regionGrid");
+		const instructionsOverlay = document.getElementById("instructionsOverlay");
+		const closeInstructionsBtn = document.getElementById("closeInstructionsBtn");
+		const instructionsRegionLabel = document.getElementById("instructionsRegionLabel");
+		const startRegionFromInstructions = document.getElementById("startRegionFromInstructions");
+
+		const regionTitle = document.getElementById("regionTitle");
+		const scorePill = document.getElementById("scorePill");
+		const qualityPill = document.getElementById("qualityPill");
+		const waterPill = document.getElementById("waterPill");
+		const rainPill = document.getElementById("rainPill");
+		const pollutionPill = document.getElementById("pollutionPill");
+		const animalHealthPill = document.getElementById("animalHealthPill");
+		const timePill = document.getElementById("timePill");
+		const targetPill = document.getElementById("targetPill");
+		const phaseMsg = document.getElementById("phaseMsg");
+		const statusMsg = document.getElementById("statusMsg");
+
+		const scene = document.getElementById("scene");
+		const mountains = document.getElementById("mountains");
+		const river = document.getElementById("river");
+		const flow = document.getElementById("flow");
+		const forestRing = document.getElementById("forestRing");
+		const cloud = document.getElementById("cloud");
+		const inventory = document.getElementById("inventory");
+		const vegetation = document.getElementById("vegetation");
+		const tools = Array.from(document.querySelectorAll(".tool"));
+		const pollutionSpots = Array.from(document.querySelectorAll(".pollution"));
+		const animalEls = Array.from(document.querySelectorAll(".animal"));
+
+		const restartBtn = document.getElementById("restartBtn");
+		const backToMenuBtn = document.getElementById("backToMenuBtn");
+		const endOverlay = document.getElementById("endOverlay");
+		const endTitle = document.getElementById("endTitle");
+		const endSummary = document.getElementById("endSummary");
+		const resultQuality = document.getElementById("resultQuality");
+		const resultScore = document.getElementById("resultScore");
+		const resultBonus = document.getElementById("resultBonus");
+		const resultAnimals = document.getElementById("resultAnimals");
+		const retryBtn = document.getElementById("retryBtn");
+		const endMenuBtn = document.getElementById("endMenuBtn");
+		const animalLabels = {
+			fish: "river trout",
+			otter: "gold carp",
+			frog: "reed frog",
+			bird: "marsh frog"
+		};
+
+		const regions = {
+			riverBank: {
+				name: "River Bank",
+				rainUnlock: 24,
+				animalUnlock: 55,
+				rainImpact: 1.8,
+				targetQuality: 78,
+				timeLimit: 120,
+				actionLimit: 90,
+				filterCharges: { plant: 8, net: 4 },
+				filterCooldownMs: { plant: 900, net: 1400 },
+				appearance: {
+					scene: "linear-gradient(180deg, #98d7ff 0%, #74c4ff 44%, #82d08e 45%, #72bf7d 100%)",
+					cloud: "#f8fcff",
+					cloudShadow: "rgba(196, 228, 247, 0.85)",
+					vegetation: ["🌾", "🌿", "🍃", "🌾", "🌿"],
+					riverShape: {
+						height: "clamp(170px, 25vw, 250px)",
+						borderRadius: "42% 58% 63% 37% / 54% 39% 61% 46%",
+						transform: "rotate(-1.4deg)"
+					},
+					pollutionSpots: [
+						{ left: "16%", top: "52%" },
+						{ left: "38%", top: "33%" },
+						{ left: "60%", top: "56%" },
+						{ left: "78%", top: "39%" }
+					]
+				}
+			},
+			wetlandValley: {
+				name: "Wetland Valley",
+				rainUnlock: 28,
+				animalUnlock: 60,
+				rainImpact: 1.6,
+				targetQuality: 82,
+				timeLimit: 115,
+				actionLimit: 85,
+				filterCharges: { plant: 7, net: 3 },
+				filterCooldownMs: { plant: 1050, net: 1650 },
+				appearance: {
+					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #89c78d 45%, #6dad72 100%)",
+					cloud: "#eef7fb",
+					cloudShadow: "rgba(178, 212, 226, 0.86)",
+					mountains: true,
+					vegetation: ["🌱", "🪷", "🌿", "🌾", "🪷"],
+					riverShape: {
+						height: "clamp(185px, 28vw, 265px)",
+						borderRadius: "58% 42% 48% 52% / 39% 66% 34% 61%",
+						transform: "rotate(2.2deg)"
+					},
+					pollutionSpots: [
+						{ left: "12%", top: "58%" },
+						{ left: "34%", top: "41%" },
+						{ left: "58%", top: "61%" },
+						{ left: "82%", top: "44%" }
+					]
+				}
+			},
+			forestCreek: {
+				name: "Forest Creek",
+				rainUnlock: 32,
+				animalUnlock: 65,
+				rainImpact: 1.45,
+				targetQuality: 86,
+				timeLimit: 110,
+				actionLimit: 82,
+				filterCharges: { plant: 6, net: 3 },
+				filterCooldownMs: { plant: 1150, net: 1800 },
+				appearance: {
+					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #6cae71 45%, #548f5a 100%)",
+					cloud: "#e8f3fa",
+					cloudShadow: "rgba(150, 188, 210, 0.88)",
+					mountains: false,
+					vegetation: ["🌲", "🌿", "🍀", "🌲", "🍃"],
+					riverShape: {
+						height: "clamp(160px, 23vw, 235px)",
+						borderRadius: "35% 65% 44% 56% / 62% 33% 67% 38%",
+						transform: "rotate(-2.8deg)"
+					},
+					pollutionSpots: [
+						{ left: "18%", top: "60%" },
+						{ left: "41%", top: "36%" },
+						{ left: "64%", top: "59%" },
+						{ left: "84%", top: "34%" }
+					]
+				}
+			}
+		};
+
+		const toolsConfig = {
+			plant: { cleanup: 18, score: 14, tone: 620 },
+			net: { cleanup: 30, score: 22, tone: 760 }
+		};
+
+		const state = {
+			regionKey: null,
+			region: null,
+			score: 0,
+			bonusPoints: 0,
+			rain: 0,
+			waterLevel: 0,
+			quality: 0,
+			timeLeft: 0,
+			actionsUsed: 0,
+			gameEnded: false,
+			timerId: null,
+			pollutionLevels: [100, 100, 100, 100],
+			animalHealth: {
+				fish: 0,
+				otter: 0,
+				frog: 0,
+				bird: 0
+			},
+			unlockedTools: {
+				plant: false,
+				net: false
+			},
+			filterCharges: {
+				plant: 0,
+				net: 0
+			},
+			filterCooldownUntil: {
+				plant: 0,
+				net: 0
+			},
+			animalRescued: {
+				fish: false,
+				otter: false,
+				frog: false,
+				bird: false
+			},
+			phase: "idle",
+			dragTool: null,
+			cloudDragging: false,
+			cloudRect: null,
+			lastDragRainAt: 0,
+			pendingRegion: null
+		};
+
+		function updateHUD() {
+			const pollutionAvg = Math.round(state.pollutionLevels.reduce((a, b) => a + b, 0) / state.pollutionLevels.length);
+			const animalAvg = Math.round(
+				(state.animalHealth.fish + state.animalHealth.otter + state.animalHealth.frog + state.animalHealth.bird) / 4
+			);
+			scorePill.textContent = `Score: ${state.score}`;
+			qualityPill.textContent = `Quality: ${Math.round(state.quality)}%`;
+			waterPill.textContent = `Water: ${Math.round(state.waterLevel)}%`;
+			rainPill.textContent = `Rain: ${state.rain}`;
+			pollutionPill.textContent = `Pollution: ${pollutionAvg}%`;
+			animalHealthPill.textContent = `Animal Health: ${animalAvg}%`;
+			timePill.textContent = `Time: ${Math.max(0, state.timeLeft)}s`;
+			targetPill.textContent = `Target: ${state.region ? state.region.targetQuality : 0}%`;
+		}
+
+		function consumeAction() {
+			if (state.gameEnded || !state.region) return false;
+			state.actionsUsed += 1;
+			updateHUD();
+			return true;
+		}
+
+		function setStatus(message) {
+			statusMsg.textContent = message;
+		}
+
+		function updateToolButtons() {
+			const now = Date.now();
+			tools.forEach((tool) => {
+				const toolKey = tool.dataset.tool;
+				const baseLabel = tool.dataset.label;
+				const chargesLeft = state.filterCharges[toolKey];
+				const cooldownLeft = Math.max(0, state.filterCooldownUntil[toolKey] - now);
+				const isUnlocked = state.unlockedTools[toolKey];
+
+				if (!isUnlocked) {
+					tool.textContent = `${baseLabel} (locked)`;
+					tool.disabled = true;
+					tool.classList.remove("ready");
+					return;
+				}
+
+				if (chargesLeft <= 0) {
+					tool.textContent = `${baseLabel} (depleted)`;
+					tool.disabled = true;
+					tool.classList.remove("ready");
+					return;
+				}
+
+				if (cooldownLeft > 0) {
+					tool.textContent = `${baseLabel} (${Math.ceil(cooldownLeft / 1000)}s cooldown)`;
+					tool.disabled = true;
+					tool.classList.remove("ready");
+					return;
+				}
+
+				tool.textContent = `${baseLabel} (${chargesLeft} left)`;
+				tool.disabled = false;
+				tool.classList.add("ready");
+			});
+		}
+
+		function floatPoints(text, x, y, color = "#08304b") {
+			const bubble = document.createElement("div");
+			bubble.className = "float";
+			bubble.textContent = text;
+			bubble.style.left = `${x}px`;
+			bubble.style.top = `${y}px`;
+			bubble.style.color = color;
+			scene.appendChild(bubble);
+			setTimeout(() => bubble.remove(), 820);
+		}
+
+		let audioCtx;
+		function tone(frequency, duration = 0.08, type = "sine") {
+			if (!audioCtx) {
+				const Ctx = window.AudioContext || window.webkitAudioContext;
+				if (!Ctx) return;
+				audioCtx = new Ctx();
+			}
+			const osc = audioCtx.createOscillator();
+			const gain = audioCtx.createGain();
+			osc.type = type;
+			osc.frequency.value = frequency;
+			gain.gain.value = 0.05;
+			osc.connect(gain);
+			gain.connect(audioCtx.destination);
+			osc.start();
+			gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+			osc.stop(audioCtx.currentTime + duration);
+		}
+
+		function rainSound() { tone(420, 0.06, "triangle"); }
+		function cleanSound(freq = 700) { tone(freq, 0.09, "sine"); }
+		function animalSound(kind) {
+			if (kind === "frog") tone(260, 0.12, "square");
+			else if (kind === "bird") tone(220, 0.11, "square");
+			else if (kind === "otter") tone(500, 0.09, "sine");
+			else tone(460, 0.1, "sine");
+		}
+
+		function renderRain(x) {
+			for (let i = 0; i < 12; i += 1) {
+				const drop = document.createElement("span");
+				drop.className = "rain";
+				drop.style.left = `${x + Math.random() * 110 - 55}px`;
+				drop.style.top = `${95 + Math.random() * 18}px`;
+				scene.appendChild(drop);
+				setTimeout(() => drop.remove(), 710);
+			}
+		}
+
+		function recalcQuality() {
+			const avgPollution = state.pollutionLevels.reduce((a, b) => a + b, 0) / state.pollutionLevels.length;
+			state.waterLevel = Math.max(0, Math.min(100, state.rain * 2.2));
+			const rainFactor = Math.min(35, state.rain * state.region.rainImpact);
+			const cleanupFactor = (100 - avgPollution) * 0.65;
+			state.quality = Math.max(0, Math.min(100, rainFactor + cleanupFactor));
+			updateAnimalHealth();
+			checkToolUnlocks();
+			updateEnvironment(avgPollution);
+			updatePhase();
+			updateHUD();
+			evaluateEndConditions();
+		}
+
+		function updateAnimalHealth() {
+			const spotByAnimal = {
+				fish: 0,
+				otter: 1,
+				frog: 2,
+				bird: 3
+			};
+			Object.entries(spotByAnimal).forEach(([animal, spotIndex]) => {
+				const localPollution = state.pollutionLevels[spotIndex];
+				const localHealth = Math.max(0, Math.min(100, state.quality - localPollution * 0.25 + 18));
+				state.animalHealth[animal] = localHealth;
+			});
+		}
+
+		function checkToolUnlocks() {
+			if (state.phase === "idle" || state.phase === "rain") {
+				return;
+			}
+			if (!state.unlockedTools.net && (state.score >= 120 || state.quality >= 45)) {
+				state.unlockedTools.net = true;
+				setStatus("Eco Net unlocked: advanced cleanup is now available.");
+				cleanSound(820);
+				updateToolButtons();
+			}
+		}
+
+		function updateEnvironment(avgPollution) {
+			const quality = state.quality;
+			const murky = { r: 69, g: 110, b: 132 };
+			const clear = { r: 59, g: 173, b: 245 };
+			const t = quality / 100;
+			const r = Math.round(murky.r + (clear.r - murky.r) * t);
+			const g = Math.round(murky.g + (clear.g - murky.g) * t);
+			const b = Math.round(murky.b + (clear.b - murky.b) * t);
+			river.style.background = `radial-gradient(circle at 45% 36%, rgb(${Math.min(255, r + 45)}, ${Math.min(255, g + 45)}, ${Math.min(255, b + 45)}) 0%, rgb(${r}, ${g}, ${b}) 65%, rgb(${Math.max(0, r - 25)}, ${Math.max(0, g - 25)}, ${Math.max(0, b - 25)}) 100%)`;
+			flow.style.opacity = `${0.25 + t * 0.45}`;
+			flow.style.animationDuration = `${2.8 - t * 1.4}s`;
+
+			pollutionSpots.forEach((spot, index) => {
+				const level = state.pollutionLevels[index];
+				spot.style.opacity = `${Math.max(0.08, level / 130)}`;
+				spot.style.transform = `scale(${0.65 + level / 160})`;
+			});
+
+			animalEls.forEach((animal) => {
+				const key = animal.dataset.animal;
+				const health = state.animalHealth[key] ?? 0;
+				const localReady = health >= state.region.animalUnlock;
+				if (localReady) {
+					animal.classList.add("ready");
+					animal.style.filter = "";
+					animal.style.opacity = "";
+				} else {
+					animal.classList.remove("ready", "rescued");
+				}
+				if (health >= 75) {
+					animal.classList.add("happy");
+					animal.classList.remove("distressed");
+				} else if (health <= 40) {
+					animal.classList.add("distressed");
+					animal.classList.remove("happy");
+				} else {
+					animal.classList.remove("happy", "distressed");
+				}
+				if (!animal.classList.contains("ready")) {
+					const gray = Math.max(0, 1 - health / 100);
+					animal.style.filter = `grayscale(${gray.toFixed(2)}) saturate(${(0.4 + health / 100).toFixed(2)})`;
+					animal.style.opacity = `${Math.max(0.55, 0.6 + health / 250).toFixed(2)}`;
+				}
+			});
+
+			if (state.quality >= state.region.targetQuality) {
+				scene.classList.add("thriving");
+			} else {
+				scene.classList.remove("thriving");
+			}
+
+			if (avgPollution > 75) setStatus("The river is stressed. Direct rain and prepare filters.");
+			if (state.phase === "filter") setStatus("Filters unlocked. Drag tools onto polluted spots.");
+			if (state.phase === "animal") setStatus("Wildlife is responsive. Tap animals to rescue and score.");
+		}
+
+		function updatePhase() {
+			if (state.phase === "idle") return;
+			if (state.rain >= state.region.rainUnlock && state.phase === "rain") {
+				state.phase = "filter";
+				phaseMsg.textContent = "Phase 2: Pollution active — deploy filters.";
+				pollutionSpots.forEach((spot) => spot.classList.add("active"));
+				state.unlockedTools.plant = true;
+				state.unlockedTools.net = false;
+				setStatus("Plant Filter unlocked. Manage charges and cooldown before time runs out.");
+				updateToolButtons();
+			}
+			if (state.quality >= state.region.animalUnlock && state.phase !== "animal") {
+				state.phase = "animal";
+				phaseMsg.textContent = "Phase 3: Wildlife recovery — tap animals for rescue bonuses.";
+			}
+		}
+
+		function addRain(clientX) {
+			if (state.phase === "idle" || state.gameEnded) return;
+			if (!consumeAction()) return;
+			const sceneRect = scene.getBoundingClientRect();
+			const x = Math.max(20, Math.min(sceneRect.width - 20, clientX - sceneRect.left));
+			state.rain += 1;
+			state.score += 3;
+			renderRain(x);
+			rainSound();
+			floatPoints("+3", x, 145, "#0f63a0");
+			recalcQuality();
+		}
+
+		function applyFilter(spotEl, toolType) {
+			if (state.phase === "rain" || state.phase === "idle" || state.gameEnded) return;
+			if (!state.unlockedTools[toolType]) {
+				setStatus("That tool is still locked. Keep improving conditions.");
+				return;
+			}
+			const now = Date.now();
+			if (state.filterCharges[toolType] <= 0) {
+				setStatus("No charges left for that filter.");
+				updateToolButtons();
+				return;
+			}
+			if (now < state.filterCooldownUntil[toolType]) {
+				setStatus("Filter cooling down. Try another tool or rain action.");
+				updateToolButtons();
+				return;
+			}
+			const index = Number(spotEl.dataset.spot);
+			const before = state.pollutionLevels[index];
+			if (before <= 0) return;
+			if (!consumeAction()) return;
+
+			if (before < 16) {
+				state.score = Math.max(0, state.score - 6);
+				floatPoints("-6 waste", spotEl.offsetLeft + 8, spotEl.offsetTop - 4, "#8a2b2b");
+				setStatus("Inefficient placement! Save filters for heavier pollution.");
+				updateHUD();
+			}
+
+			state.filterCharges[toolType] -= 1;
+			state.filterCooldownUntil[toolType] = now + state.region.filterCooldownMs[toolType];
+
+			const cfg = toolsConfig[toolType];
+			spotEl.classList.add("cleaning");
+			const steps = 6;
+			let tick = 0;
+			const amountPerStep = cfg.cleanup / steps;
+			const interval = setInterval(() => {
+				tick += 1;
+				state.pollutionLevels[index] = Math.max(0, state.pollutionLevels[index] - amountPerStep);
+				recalcQuality();
+				if (tick >= steps) {
+					clearInterval(interval);
+					spotEl.classList.remove("cleaning");
+				}
+			}, 85);
+
+			state.score += cfg.score;
+			cleanSound(cfg.tone);
+			const rect = spotEl.getBoundingClientRect();
+			const sceneRect = scene.getBoundingClientRect();
+			floatPoints(`+${cfg.score}`, rect.left - sceneRect.left + 8, rect.top - sceneRect.top, "#0f8f60");
+			updateToolButtons();
+			setTimeout(updateToolButtons, state.region.filterCooldownMs[toolType] + 20);
+		}
+
+		function handleAnimalTap(animalEl) {
+			if (state.gameEnded) return;
+			if (!animalEl.classList.contains("ready")) return;
+			const kind = animalEl.dataset.animal;
+			if (!consumeAction()) return;
+			if (state.animalRescued[kind]) {
+				if (state.quality >= 85) {
+					state.score += 8;
+					state.bonusPoints += 8;
+					animalEl.classList.add("happy");
+					animalSound(kind);
+					const rect = animalEl.getBoundingClientRect();
+					const sceneRect = scene.getBoundingClientRect();
+					floatPoints("+8 bonus", rect.left - sceneRect.left + 8, rect.top - sceneRect.top, "#2a9b5f");
+					setStatus("Bonus interaction unlocked by high water quality.");
+					updateHUD();
+				}
+				return;
+			}
+			state.animalRescued[kind] = true;
+			animalEl.classList.add("rescued");
+			state.score += 35;
+			animalSound(kind);
+			const rect = animalEl.getBoundingClientRect();
+			const sceneRect = scene.getBoundingClientRect();
+			floatPoints("+35", rect.left - sceneRect.left + 10, rect.top - sceneRect.top, "#1f8f4e");
+			setStatus(`Rescue completed: ${animalLabels[kind]}.`);
+			updateHUD();
+			evaluateEndConditions();
+		}
+
+		function countHealthyAnimals() {
+			const values = Object.values(state.animalHealth);
+			return values.filter((value) => value >= 75).length;
+		}
+
+		function evaluateEndConditions() {
+			if (state.gameEnded || !state.region) return;
+			const allHealthy = countHealthyAnimals() === 4;
+			if (state.quality >= state.region.targetQuality && allHealthy) {
+				endRegion(true, "River restored");
+			}
+		}
+
+		function buildResults(win, reason) {
+			const healthyCount = countHealthyAnimals();
+			endTitle.textContent = win ? "Region Restored 🌿" : "Region Still Polluted";
+			endSummary.textContent = win
+				? `Excellent work in ${state.region.name}. The river is flowing clean and wildlife is thriving.`
+				: `Run ended: ${reason}. Retry this region or return to region select.`;
+			resultQuality.textContent = `Quality: ${Math.round(state.quality)}%`;
+			resultScore.textContent = `Score: ${state.score}`;
+			resultBonus.textContent = `Bonus: ${state.bonusPoints}`;
+			resultAnimals.textContent = `Animals Healthy: ${healthyCount}/4`;
+		}
+
+		function endRegion(win, reason) {
+			if (state.gameEnded) return;
+			state.gameEnded = true;
+			clearInterval(state.timerId);
+			state.timerId = null;
+			if (win) {
+				scene.classList.add("thriving");
+				flow.style.animationDuration = "1s";
+				cleanSound(940);
+			} else {
+				animalEls.forEach((animal) => animal.classList.add("distressed"));
+			}
+			buildResults(win, reason);
+			endOverlay.style.display = "flex";
+		}
+
+		function startTimer() {
+			clearInterval(state.timerId);
+			state.timerId = setInterval(() => {
+				if (state.gameEnded || !state.region) return;
+				state.timeLeft -= 1;
+				updateHUD();
+				if (state.timeLeft <= 0) {
+					endRegion(false, "Time limit reached");
+				}
+			}, 1000);
+		}
+
+		function resetRegionState() {
+			clearInterval(state.timerId);
+			state.timerId = null;
+			state.score = 0;
+			state.bonusPoints = 0;
+			state.rain = 0;
+			state.waterLevel = 0;
+			state.quality = 0;
+			state.timeLeft = state.region ? state.region.timeLimit : 0;
+			state.actionsUsed = 0;
+			state.gameEnded = false;
+			state.pollutionLevels = [100, 100, 100, 100];
+			state.animalHealth = { fish: 0, otter: 0, frog: 0, bird: 0 };
+			state.unlockedTools = { plant: false, net: false };
+			state.filterCharges = {
+				plant: state.region.filterCharges.plant,
+				net: state.region.filterCharges.net
+			};
+			state.filterCooldownUntil = { plant: 0, net: 0 };
+			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
+			state.phase = "rain";
+
+			tools.forEach((tool) => { tool.disabled = true; });
+			pollutionSpots.forEach((spot) => {
+				spot.classList.remove("active", "cleaning");
+				spot.style.opacity = "0";
+				spot.style.transform = "scale(0.9)";
+			});
+			animalEls.forEach((animal) => {
+				animal.classList.remove("ready", "rescued", "happy", "distressed");
+				animal.style.filter = "";
+				animal.style.opacity = "";
+			});
+			scene.classList.remove("thriving");
+			flow.style.animationDuration = "2.6s";
+			endOverlay.style.display = "none";
+			vegetation.style.opacity = "";
+
+			phaseMsg.textContent = "Phase 1: Tap or drag cloud to build rainfall.";
+			setStatus("Rain first. Filters and wildlife unlock as quality rises.");
+			updateToolButtons();
+			recalcQuality();
+			startTimer();
+		}
+
+		function applyRegionAppearance() {
+			if (!state.region) return;
+			const theme = state.region.appearance;
+			scene.style.background = theme.scene;
+			mountains.style.display = theme.mountains ? "block" : "none";
+			cloud.style.background = theme.cloud;
+			cloud.style.boxShadow = `inset 0 -10px 0 ${theme.cloudShadow}`;
+			river.style.height = theme.riverShape.height;
+			river.style.borderRadius = theme.riverShape.borderRadius;
+			river.style.transform = theme.riverShape.transform;
+			vegetation.innerHTML = theme.vegetation.map((item) => `<span>${item}</span>`).join("");
+			forestRing.style.display = state.regionKey === "forestCreek" ? "flex" : "none";
+
+			pollutionSpots.forEach((spot, index) => {
+				const target = theme.pollutionSpots[index];
+				if (!target) return;
+				spot.style.left = target.left;
+				spot.style.top = target.top;
+			});
+		}
+
+		function startRegion(regionKey) {
+			state.regionKey = regionKey;
+			state.region = regions[regionKey];
+			regionTitle.textContent = `River Guardians • ${state.region.name}`;
+			applyRegionAppearance();
+			menuScreen.classList.add("hidden");
+			gameScreen.classList.remove("hidden");
+			resetRegionState();
+		}
+
+		function goToMenu() {
+			clearInterval(state.timerId);
+			state.timerId = null;
+			state.phase = "idle";
+			state.region = null;
+			state.regionKey = null;
+			state.pendingRegion = null;
+			state.gameEnded = false;
+			endOverlay.style.display = "none";
+			instructionsOverlay.style.display = "none";
+			scene.classList.remove("thriving");
+			menuScreen.classList.remove("hidden");
+			gameScreen.classList.add("hidden");
+		}
+
+		regionGrid.addEventListener("click", (event) => {
+			const button = event.target.closest(".region-btn");
+			if (!button) return;
+			state.pendingRegion = button.dataset.region;
+			instructionsRegionLabel.textContent = `Region: ${regions[state.pendingRegion].name}`;
+			instructionsOverlay.style.display = "flex";
+		});
+
+		closeInstructionsBtn.addEventListener("click", () => {
+			instructionsOverlay.style.display = "none";
+			state.pendingRegion = null;
+		});
+
+		startRegionFromInstructions.addEventListener("click", () => {
+			if (!state.pendingRegion) return;
+			const selectedRegion = state.pendingRegion;
+			instructionsOverlay.style.display = "none";
+			state.pendingRegion = null;
+			startRegion(selectedRegion);
+		});
+
+		instructionsOverlay.addEventListener("click", (event) => {
+			if (event.target === instructionsOverlay) {
+				instructionsOverlay.style.display = "none";
+				state.pendingRegion = null;
+			}
+		});
+
+		restartBtn.addEventListener("click", () => {
+			if (!state.regionKey) return;
+			resetRegionState();
+		});
+
+		retryBtn.addEventListener("click", () => {
+			if (!state.regionKey) return;
+			resetRegionState();
+		});
+
+		endMenuBtn.addEventListener("click", goToMenu);
+
+		backToMenuBtn.addEventListener("click", goToMenu);
+
+		cloud.addEventListener("click", (event) => {
+			if (state.gameEnded) return;
+			addRain(event.clientX);
+		});
+
+		cloud.addEventListener("pointerdown", (event) => {
+			if (state.phase === "idle" || state.gameEnded) return;
+			state.cloudDragging = true;
+			cloud.setPointerCapture(event.pointerId);
+			cloud.style.cursor = "grabbing";
+			state.cloudRect = scene.getBoundingClientRect();
+			state.lastDragRainAt = 0;
+		});
+
+		cloud.addEventListener("pointermove", (event) => {
+			if (!state.cloudDragging || !state.cloudRect) return;
+			const sceneWidth = state.cloudRect.width;
+			const cloudWidth = cloud.offsetWidth;
+			const x = Math.max(0, Math.min(sceneWidth - cloudWidth, event.clientX - state.cloudRect.left - cloudWidth / 2));
+			cloud.style.left = `${x}px`;
+			const now = Date.now();
+			if (now - state.lastDragRainAt > 130) {
+				addRain(event.clientX);
+				state.lastDragRainAt = now;
+			}
+		});
+
+		cloud.addEventListener("pointerup", (event) => {
+			state.cloudDragging = false;
+			cloud.releasePointerCapture(event.pointerId);
+			cloud.style.cursor = "grab";
+		});
+
+		tools.forEach((tool) => {
+			tool.addEventListener("dragstart", (event) => {
+				if (state.gameEnded) {
+					event.preventDefault();
+					return;
+				}
+				if (tool.disabled) {
+					event.preventDefault();
+					return;
+				}
+				state.dragTool = tool.dataset.tool;
+				event.dataTransfer.setData("text/plain", state.dragTool);
+				event.dataTransfer.effectAllowed = "copy";
+			});
+		});
+
+		pollutionSpots.forEach((spot) => {
+			spot.addEventListener("dragover", (event) => {
+				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
+				event.preventDefault();
+			});
+
+			spot.addEventListener("drop", (event) => {
+				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
+				event.preventDefault();
+				const toolType = event.dataTransfer.getData("text/plain") || state.dragTool;
+				if (!toolType) return;
+				applyFilter(spot, toolType);
+				evaluateEndConditions();
+			});
+		});
+
+		animalEls.forEach((animal) => {
+			animal.addEventListener("click", () => handleAnimalTap(animal));
+		});
+
+		goToMenu();
+	</script>
+</body>
+</html>
