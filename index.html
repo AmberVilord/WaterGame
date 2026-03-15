@@ -270,25 +270,27 @@
 			left: 44%;
 			width: clamp(115px, 15vw, 170px);
 			height: clamp(58px, 8vw, 82px);
-			background: #f8fcff;
+			background: radial-gradient(130% 102% at 50% 38%, #8c99a8 0%, #6f7b8b 58%, #515c6a 100%);
 			border-radius: 999px;
-			box-shadow: inset 0 -10px 0 rgba(196, 228, 247, 0.85);
+			box-shadow: inset 0 -12px 0 #3f4b59, inset 0 6px 10px #8d9aaa, 0 7px 14px rgba(28, 35, 44, 0.3);
 			z-index: 8;
 			cursor: grab;
 			touch-action: none;
 			user-select: none;
+			isolation: isolate;
 		}
 
 		.cloud::before,
 		.cloud::after {
 			content: "";
 			position: absolute;
-			background: inherit;
+			background: radial-gradient(122% 100% at 50% 40%, #8f9cad 0%, #6f7b8b 62%, #515c6a 100%);
 			border-radius: 50%;
+			opacity: 1;
 		}
 
-		.cloud::before { width: 40%; height: 70%; left: 12%; top: -30%; }
-		.cloud::after { width: 32%; height: 56%; right: 16%; top: -26%; }
+		.cloud::before { width: 50%; height: 86%; left: 8%; top: -34%; }
+		.cloud::after { width: 44%; height: 76%; right: 8%; top: -33%; }
 
 		@keyframes cloud-drift {
 			0% { transform: translateX(0); }
@@ -299,17 +301,20 @@
 		.mini-cloud {
 			position: absolute;
 			border-radius: 999px;
-			background: rgba(255, 255, 255, 0.72);
-			box-shadow: inset 0 -4px 0 rgba(196, 228, 247, 0.6);
+			background: radial-gradient(120% 95% at 50% 35%, rgba(255, 255, 255, 0.95) 0%, rgba(249, 252, 255, 0.88) 55%, rgba(233, 244, 252, 0.62) 82%, rgba(233, 244, 252, 0) 100%);
+			box-shadow: 0 8px 16px rgba(160, 196, 219, 0.18), 0 0 14px rgba(225, 239, 250, 0.42);
 			pointer-events: none;
 			z-index: 3;
-			animation: cloud-drift linear infinite;
+			opacity: 0.96;
+			filter: blur(0.8px);
+			animation: none;
 		}
 		.mini-cloud::before, .mini-cloud::after {
 			content: "";
 			position: absolute;
 			border-radius: 50%;
 			background: inherit;
+			filter: blur(0.5px);
 		}
 		.mini-cloud::before { width: 42%; height: 75%; left: 14%; top: -32%; }
 		.mini-cloud::after  { width: 30%; height: 58%; right: 14%; top: -28%; }
@@ -366,6 +371,43 @@
 		.m4 { right: 13%; width: 34%; height: 84%; }
 		.m5 { right: -2%; width: 26%; height: 55%; z-index: 1; }
 
+		/* ——— Houses (River Bank) ——— */
+		.houses {
+			position: absolute;
+			left: 0; right: 0;
+			bottom: 54%;
+			height: 20%;
+			display: none;
+			pointer-events: none;
+			z-index: 3;
+			overflow: visible;
+		}
+		.house {
+			position: absolute;
+			bottom: 0;
+		}
+		/* H1 – Cream cottage, red pitched roof */
+		.h1 { left: 4%; width: 80px; height: 52px; background: #f0e8d5; box-shadow: inset -3px 0 0 rgba(0,0,0,0.08); }
+		.h1::before { content:""; position:absolute; left:-10px; right:-10px; bottom:100%; height:38px; clip-path:polygon(0 100%,50% 0%,100% 100%); background:#9b2c2c; }
+		.h1::after  { content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:16px; height:30px; background:#6b3a1f; border-radius:40% 40% 0 0; }
+		.h1 .chimney { position:absolute; bottom:100%; left:62%; width:10px; height:22px; background:#7a3030; margin-bottom:20px; }
+		/* H2 – Narrow brick townhouse, slate roof */
+		.h2 { left: 20%; width: 52px; height: 82px; background: repeating-linear-gradient(180deg,#c49090 0 8px,#8b6060 8px 10px); outline: 1px solid rgba(0,0,0,0.12); }
+		.h2::before { content:""; position:absolute; left:-7px; right:-7px; bottom:100%; height:52px; clip-path:polygon(0 100%,50% 0%,100% 100%); background:#3d4a58; }
+		.h2::after  { content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:14px; height:28px; background:#3a2010; border-radius:2px 2px 0 0; }
+		/* H3 – Wide tan bungalow, shallow brown roof */
+		.h3 { left: 37%; width: 118px; height: 44px; background: #d4b896; box-shadow: inset -4px 0 0 rgba(0,0,0,0.1); }
+		.h3::before { content:""; position:absolute; left:-7px; right:-7px; bottom:100%; height:22px; clip-path:polygon(0 100%,50% 0%,100% 100%); background:#7d5a3c; }
+		.h3::after  { content:""; position:absolute; bottom:0; left:18%; width:22px; height:38px; background:#5a3d20; border-radius:3px 3px 0 0; }
+		/* H4 – Modern home, white walls, dark flat roof overhang + window */
+		.h4 { left: 58%; width: 90px; height: 60px; background: #f5f5ef; border: 2px solid #ddd; }
+		.h4::before { content:""; position:absolute; left:-10px; right:-10px; bottom:100%; height:14px; background:#2c3e50; border-radius:2px 2px 0 0; }
+		.h4::after  { content:""; position:absolute; top:8px; left:10px; width:34px; height:26px; background:linear-gradient(135deg,#a8d8ea,#7ab8ce); border:2px solid #aab; border-radius:2px; }
+		/* H5 – Farmhouse, warm timber, large gabled roof, side annex */
+		.h5 { left: 75%; width: 100px; height: 68px; background: #b5885a; box-shadow: inset -6px 0 0 rgba(0,0,0,0.12); }
+		.h5::before { content:""; position:absolute; left:-9px; right:-9px; bottom:100%; height:40px; clip-path:polygon(0 100%,50% 0%,100% 100%); background:#8b1c1c; }
+		.h5::after  { content:""; position:absolute; bottom:0; right:-18px; width:20px; height:52px; background:#9a7040; outline: 1px solid rgba(0,0,0,0.12); }
+
 		.river-wrap {
 			position: absolute;
 			top: calc(var(--grass-start) + 2%);
@@ -376,6 +418,7 @@
 			z-index: 4;
 			display: flex;
 			align-items: flex-end;
+			overflow: hidden;
 		}
 
 		.river {
@@ -384,13 +427,109 @@
 			height: min(100%, clamp(170px, 25vw, 250px));
 			border-radius: 42% 58% 63% 37% / 54% 39% 61% 46%;
 			background: radial-gradient(circle at 45% 36%, #7bb8d3 0%, #4d86a2 68%, #325e75 100%);
-			border: 5px solid rgba(255, 255, 255, 0.72);
-			box-shadow: inset 0 -18px 0 rgba(7, 53, 83, 0.4), 0 10px 16px rgba(9, 55, 86, 0.23);
+			border: none;
+			box-shadow:
+				0 0 0 2px rgba(112, 196, 82, 0.55),
+				0 0 0 6px rgba(85, 164, 56, 0.42),
+				0 0 0 12px rgba(58, 126, 35, 0.32),
+				0 0 0 20px rgba(35, 86, 22, 0.2),
+				0 0 0 30px rgba(17, 47, 10, 0.1),
+				inset 0 -18px 0 rgba(7, 53, 83, 0.4),
+				0 10px 16px rgba(9, 55, 86, 0.23);
 			overflow: hidden;
 			transform: rotate(-1.4deg);
 			transform-origin: center;
 			transition: border-radius 0.3s ease, transform 0.3s ease, height 0.3s ease;
 		}
+
+		.scene.river-bank-mode .river {
+			margin-left: -20px;
+			margin-right: -20px;
+			width: calc(100% + 40px);
+			border-radius: 0;
+			box-shadow: inset 0 -18px 0 rgba(7, 53, 83, 0.4), 0 10px 16px rgba(9, 55, 86, 0.23);
+		}
+
+		.scene.river-bank-mode .river::before,
+		.scene.river-bank-mode .river::after {
+			content: "";
+			position: absolute;
+			left: 0;
+			right: 0;
+			pointer-events: none;
+		}
+
+		.scene.river-bank-mode .river::before {
+			top: 0;
+			height: 24px;
+			background: linear-gradient(to bottom, rgba(66, 133, 45, 0.86), rgba(66, 133, 45, 0));
+		}
+
+		.scene.river-bank-mode .river::after {
+			bottom: 0;
+			height: 30px;
+			background: linear-gradient(to top, rgba(49, 111, 31, 0.82), rgba(49, 111, 31, 0));
+		}
+
+		.scene.river-bank-mode .grass-tuft {
+			display: none;
+		}
+
+		.scene.wetland-mode .river {
+			box-shadow:
+				0 0 0 2px rgba(106, 184, 74, 0.48),
+				0 0 0 5px rgba(74, 149, 48, 0.34),
+				0 0 0 10px rgba(52, 114, 32, 0.22),
+				0 0 0 16px rgba(28, 73, 17, 0.12),
+				inset 0 -18px 0 rgba(7, 53, 83, 0.4),
+				0 10px 16px rgba(9, 55, 86, 0.23);
+		}
+
+		/* Grass tufts around pond edge */
+		.grass-tuft {
+			position: absolute;
+			pointer-events: none;
+			z-index: 6;
+			width: 22px;
+			height: 28px;
+		}
+		.grass-tuft::before,
+		.grass-tuft::after,
+		.grass-tuft > span {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			clip-path: polygon(22% 0%, 78% 0%, 100% 100%, 0% 100%);
+		}
+		.grass-tuft::before {
+			left: 0; width: 7px; height: 24px;
+			background: linear-gradient(to top, #2a7018, #72d456);
+			transform: rotate(-18deg); transform-origin: bottom center;
+		}
+		.grass-tuft::after {
+			left: 7px; width: 8px; height: 28px;
+			background: linear-gradient(to top, #357a20, #88e464);
+		}
+		.grass-tuft > span {
+			display: block;
+			right: 0; width: 7px; height: 22px;
+			background: linear-gradient(to top, #266814, #60c040);
+			transform: rotate(16deg); transform-origin: bottom center;
+		}
+		/* Bottom edge tufts */
+		.gt1 { left:  3%; bottom: 0; }
+		.gt2 { left: 15%; bottom: 0; }
+		.gt3 { left: 28%; bottom: 0; }
+		.gt4 { left: 42%; bottom: 0; }
+		.gt5 { left: 56%; bottom: 0; }
+		.gt6 { left: 70%; bottom: 0; }
+		.gt7 { left: 83%; bottom: 0; }
+		.gt8 { right: 2%; bottom: 0; }
+		/* Side tufts */
+		.gt9  { left: 0; bottom: 30%; transform: rotate(-90deg); }
+		.gt10 { left: 0; bottom: 55%; transform: rotate(-90deg); }
+		.gt11 { right: 0; bottom: 30%; transform: rotate(90deg); }
+		.gt12 { right: 0; bottom: 55%; transform: rotate(90deg); }
 
 		.flow {
 			position: absolute;
@@ -655,13 +794,13 @@
 		.forest-ring {
 			position: absolute;
 			left: 50%;
-			bottom: 2%;
+			bottom: calc(100% - var(--grass-start));
 			transform: translateX(-50%);
-			width: min(112%, 1040px);
-			height: min(48vh, 380px);
+			width: min(100%, 980px);
+			height: min(44vh, 340px);
 			display: none;
 			pointer-events: none;
-			z-index: 1;
+			z-index: 3;
 			overflow: visible;
 		}
 
@@ -709,40 +848,40 @@
 		}
 
 		.tree.offset-down {
-			transform: translateY(14px);
+			transform: translateY(0);
 		}
 
 		.tree.offset-up {
-			transform: translateY(-10px);
+			transform: translateY(0);
 		}
 
 		.forest-ring .tree:nth-child(1) {
-			left: 6%;
+			left: -2%;
 			bottom: 0;
 		}
 
 		.forest-ring .tree:nth-child(2) {
-			left: 22%;
+			left: 13%;
 			bottom: 0;
 		}
 
 		.forest-ring .tree:nth-child(3) {
-			left: 38%;
+			left: 31%;
 			bottom: 0;
 		}
 
 		.forest-ring .tree:nth-child(4) {
-			right: 38%;
+			right: 31%;
 			bottom: 0;
 		}
 
 		.forest-ring .tree:nth-child(5) {
-			right: 22%;
+			right: 13%;
 			bottom: 0;
 		}
 
 		.forest-ring .tree:nth-child(6) {
-			right: 6%;
+			right: -2%;
 			bottom: 0;
 		}
 
@@ -986,6 +1125,13 @@
 
 			<div class="scene" id="scene">
 				<div class="sky-note" id="phaseMsg">Select a region to begin.</div>
+				<div class="houses" id="houses" aria-hidden="true">
+					<div class="house h1"><b class="chimney"></b></div>
+					<div class="house h2"></div>
+					<div class="house h3"></div>
+					<div class="house h4"></div>
+					<div class="house h5"></div>
+				</div>
 				<div class="mountains" id="mountains" aria-hidden="true">
 					<div class="mountain m5"></div>
 					<div class="mountain m1"></div>
@@ -999,17 +1145,29 @@
 				<div class="mini-cloud mc4" aria-hidden="true"></div>
 				<div class="mini-cloud mc5" aria-hidden="true"></div>
 				<div id="cloud" class="cloud" role="button" aria-label="Rain cloud"></div>
+				<div class="forest-ring" id="forestRing" aria-hidden="true">
+					<div class="tree tall"></div>
+					<div class="tree short offset-down"></div>
+					<div class="tree offset-up"></div>
+					<div class="tree tall"></div>
+					<div class="tree short offset-down"></div>
+					<div class="tree"></div>
+					<div class="tree tall offset-up"></div>
+				</div>
 
 				<div class="river-wrap" id="riverWrap">
-					<div class="forest-ring" id="forestRing" aria-hidden="true">
-						<div class="tree tall"></div>
-						<div class="tree short offset-down"></div>
-						<div class="tree offset-up"></div>
-						<div class="tree tall"></div>
-						<div class="tree short offset-down"></div>
-						<div class="tree"></div>
-						<div class="tree tall offset-up"></div>
-					</div>
+					<div class="grass-tuft gt1" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt2" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt3" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt4" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt5" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt6" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt7" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt8" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt9" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt10" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt11" aria-hidden="true"><span></span></div>
+				<div class="grass-tuft gt12" aria-hidden="true"><span></span></div>
 					<div class="river" id="river">
 						<div class="flow" id="flow"></div>
 						<div class="pollution p1" data-spot="0"></div>
@@ -1080,6 +1238,7 @@
 
 		const scene = document.getElementById("scene");
 		const mountains = document.getElementById("mountains");
+		const houses = document.getElementById("houses");
 		const riverWrap = document.getElementById("riverWrap");
 		const river = document.getElementById("river");
 		const flow = document.getElementById("flow");
@@ -1118,25 +1277,26 @@
 				targetQuality: 78,
 				timeLimit: 120,
 				actionLimit: 90,
-				filterCharges: { plant: 8, net: 4 },
+				filterCharges: { plant: 11, net: 7 },
 				filterCooldownMs: { plant: 900, net: 1400 },
 				appearance: {
 					scene: "linear-gradient(180deg, #98d7ff 0%, #74c4ff 44%, #82d08e 45%, #72bf7d 100%)",
-					cloud: "#f8fcff",
-					cloudShadow: "rgba(196, 228, 247, 0.85)",
+					cloud: "linear-gradient(180deg, #7f8b9a 0%, #667180 58%, #525d6b 100%)",
+					cloudShadow: "rgba(58, 67, 78, 0.88)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
-					riverTranslateY: "0%",
+					riverTranslateY: "-18%",
+					riverWidth: "100%",
 					vegetation: ["🌾", "🌿", "🍃", "🌾", "🌿"],
 					riverShape: {
-						height: "clamp(170px, 25vw, 250px)",
-						borderRadius: "42% 58% 63% 37% / 54% 39% 61% 46%",
-						transform: "rotate(-1.4deg)"
+						height: "clamp(112px, 14vw, 158px)",
+						borderRadius: "5% 5% 5% 5% / 55% 55% 10% 10%",
+						transform: "rotate(0deg)"
 					},
 					pollutionSpots: [
-						{ left: "16%", top: "52%" },
-						{ left: "38%", top: "33%" },
-						{ left: "60%", top: "56%" },
-						{ left: "78%", top: "39%" }
+						{ left: "12%", top: "45%" },
+						{ left: "35%", top: "30%" },
+						{ left: "62%", top: "50%" },
+						{ left: "82%", top: "35%" }
 					]
 				}
 			},
@@ -1148,14 +1308,14 @@
 				targetQuality: 82,
 				timeLimit: 115,
 				actionLimit: 85,
-				filterCharges: { plant: 7, net: 3 },
+				filterCharges: { plant: 10, net: 6 },
 				filterCooldownMs: { plant: 1050, net: 1650 },
 				appearance: {
 					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #5a9e60 45%, #3c7842 100%)",
-					cloud: "#eef7fb",
-					cloudShadow: "rgba(178, 212, 226, 0.86)",
+					cloud: "linear-gradient(180deg, #768290 0%, #5d6876 55%, #4b5563 100%)",
+					cloudShadow: "rgba(51, 60, 70, 0.9)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
-					riverTranslateY: "20%",
+					riverTranslateY: "0%",
 					mountains: true,
 					vegetation: ["🌱", "🪷", "🌿", "🌾", "🪷"],
 					riverShape: {
@@ -1179,12 +1339,12 @@
 				targetQuality: 86,
 				timeLimit: 110,
 				actionLimit: 82,
-				filterCharges: { plant: 6, net: 3 },
+				filterCharges: { plant: 9, net: 6 },
 				filterCooldownMs: { plant: 1150, net: 1800 },
 				appearance: {
 					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #6cae71 45%, #548f5a 100%)",
-					cloud: "#e8f3fa",
-					cloudShadow: "rgba(150, 188, 210, 0.88)",
+					cloud: "linear-gradient(180deg, #72808f 0%, #5b6675 56%, #495463 100%)",
+					cloudShadow: "rgba(48, 57, 67, 0.9)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
 					riverTranslateY: "0%",
 					mountains: false,
@@ -1371,7 +1531,11 @@
 			state.waterLevel = Math.max(0, Math.min(100, state.rain * 2.2));
 			const rainFactor = Math.min(35, state.rain * state.region.rainImpact);
 			const cleanupFactor = (100 - avgPollution) * 0.65;
-			state.quality = Math.max(0, Math.min(100, rainFactor + cleanupFactor));
+			const extraRainBonus = Math.min(10, Math.max(0, state.rain - state.region.rainUnlock) * 0.25);
+			const rescuedCount = Object.values(state.animalRescued).filter(Boolean).length;
+			const healthyCount = countHealthyAnimals();
+			const wildlifeRecoveryBonus = rescuedCount * 2 + healthyCount * 1.5;
+			state.quality = Math.max(0, Math.min(100, rainFactor + cleanupFactor + extraRainBonus + wildlifeRecoveryBonus));
 			updateAnimalHealth();
 			checkToolUnlocks();
 			updateEnvironment(avgPollution);
@@ -1681,9 +1845,13 @@
 			if (!state.region) return;
 			const theme = state.region.appearance;
 			scene.style.background = theme.scene;
+			scene.classList.toggle("river-bank-mode", state.regionKey === "riverBank");
+			scene.classList.toggle("wetland-mode", state.regionKey === "wetlandValley");
 			mountains.style.display = theme.mountains ? "block" : "none";
+			houses.style.display = state.regionKey === "riverBank" ? "block" : "none";
 			riverWrap.style.top = theme.riverOffsetTop || "calc(var(--grass-start) + 2%)";
 			riverWrap.style.transform = `translateX(-50%) translateY(${theme.riverTranslateY || "0%"})`;
+			riverWrap.style.width = theme.riverWidth || "min(95%, 900px)";
 			cloud.style.background = theme.cloud;
 			cloud.style.boxShadow = `inset 0 -10px 0 ${theme.cloudShadow}`;
 			river.style.height = theme.riverShape.height;
