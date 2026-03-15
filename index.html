@@ -44,7 +44,7 @@
 			height: calc(100dvh - 1.2rem);
 			max-height: calc(100dvh - 1.2rem);
 			background: rgba(255, 255, 255, 0.9);
-			border: 3px solid var(--cw-blue);
+			border: 0;
 			border-radius: 16px;
 			overflow: hidden;
 			box-shadow: 0 12px 24px rgba(17, 76, 122, 0.16);
@@ -2453,8 +2453,8 @@
 			if (!consumeAction()) return;
 
 			if (before < 16) {
-				state.score = Math.max(0, state.score - 6);
-				floatPoints("-6 waste", spotEl.offsetLeft + 8, spotEl.offsetTop - 4, "#8a2b2b");
+				state.score = Math.max(0, state.score - 5);
+				floatPoints("-5 waste", spotEl.offsetLeft + 8, spotEl.offsetTop - 4, "#8a2b2b");
 				setStatus("Inefficient placement! Save filters for heavier pollution.");
 				updateHUD();
 			}
@@ -2616,7 +2616,9 @@
 			prepareHighScoreEntry();
 			endOverlay.style.display = "flex";
 			if (win) {
-				setTimeout(() => celebrateWin(), 180);
+				requestAnimationFrame(() => {
+					setTimeout(() => celebrateWin(), 120);
+				});
 			}
 		}
 
