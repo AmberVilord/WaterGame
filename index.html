@@ -2155,17 +2155,20 @@
 		}
 
 		function getDebrisPressure(timeLeft) {
+			const safeTimeLeft = Math.max(0, timeLeft);
 			let amountMultiplier = 1;
 			let speedMultiplier = 1;
 
-			if (timeLeft <= 50) {
+			if (safeTimeLeft <= 50) {
 				amountMultiplier *= 1.2;
-				speedMultiplier *= 1.2;
+				const lateGameProgress = (50 - safeTimeLeft) / 50;
+				speedMultiplier *= 1.2 * (1 + lateGameProgress * 0.9);
 			}
 
-			if (timeLeft <= 30) {
+			if (safeTimeLeft <= 30) {
 				amountMultiplier *= 1.45;
-				speedMultiplier *= 1.45;
+				const finalStretchProgress = (30 - safeTimeLeft) / 30;
+				speedMultiplier *= 1.45 * (1 + finalStretchProgress * 1.1);
 			}
 
 			return { amountMultiplier, speedMultiplier };
