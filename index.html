@@ -290,6 +290,36 @@
 		.cloud::before { width: 40%; height: 70%; left: 12%; top: -30%; }
 		.cloud::after { width: 32%; height: 56%; right: 16%; top: -26%; }
 
+		@keyframes cloud-drift {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(18px); }
+			100% { transform: translateX(0); }
+		}
+
+		.mini-cloud {
+			position: absolute;
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.72);
+			box-shadow: inset 0 -4px 0 rgba(196, 228, 247, 0.6);
+			pointer-events: none;
+			z-index: 3;
+			animation: cloud-drift linear infinite;
+		}
+		.mini-cloud::before, .mini-cloud::after {
+			content: "";
+			position: absolute;
+			border-radius: 50%;
+			background: inherit;
+		}
+		.mini-cloud::before { width: 42%; height: 75%; left: 14%; top: -32%; }
+		.mini-cloud::after  { width: 30%; height: 58%; right: 14%; top: -28%; }
+
+		.mc1 { left: 5%;  top: 6%;  width: 90px;  height: 34px; animation-duration: 28s; }
+		.mc2 { left: 24%; top: 3%;  width: 60px;  height: 24px; animation-duration: 22s; animation-delay: -7s; }
+		.mc3 { left: 56%; top: 8%;  width: 110px; height: 40px; animation-duration: 34s; animation-delay: -14s; }
+		.mc4 { left: 72%; top: 4%;  width: 70px;  height: 26px; animation-duration: 20s; animation-delay: -3s; }
+		.mc5 { left: 85%; top: 10%; width: 50px;  height: 20px; animation-duration: 25s; animation-delay: -18s; }
+
 		.mountains {
 			position: absolute;
 			left: 0;
@@ -333,7 +363,8 @@
 		.m1 { left: -8%; width: 30%; height: 68%; }
 		.m2 { left: 10%; width: 38%; height: 100%; }
 		.m3 { left: 37%; width: 31%; height: 74%; }
-		.m4 { right: -2%; width: 34%; height: 84%; }
+		.m4 { right: 13%; width: 34%; height: 84%; }
+		.m5 { right: -2%; width: 26%; height: 55%; z-index: 1; }
 
 		.river-wrap {
 			position: absolute;
@@ -956,11 +987,17 @@
 			<div class="scene" id="scene">
 				<div class="sky-note" id="phaseMsg">Select a region to begin.</div>
 				<div class="mountains" id="mountains" aria-hidden="true">
+					<div class="mountain m5"></div>
 					<div class="mountain m1"></div>
 					<div class="mountain m2"></div>
 					<div class="mountain m3"></div>
 					<div class="mountain m4"></div>
 				</div>
+				<div class="mini-cloud mc1" aria-hidden="true"></div>
+				<div class="mini-cloud mc2" aria-hidden="true"></div>
+				<div class="mini-cloud mc3" aria-hidden="true"></div>
+				<div class="mini-cloud mc4" aria-hidden="true"></div>
+				<div class="mini-cloud mc5" aria-hidden="true"></div>
 				<div id="cloud" class="cloud" role="button" aria-label="Rain cloud"></div>
 
 				<div class="river-wrap" id="riverWrap">
@@ -1114,7 +1151,7 @@
 				filterCharges: { plant: 7, net: 3 },
 				filterCooldownMs: { plant: 1050, net: 1650 },
 				appearance: {
-					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #89c78d 45%, #6dad72 100%)",
+					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #5a9e60 45%, #3c7842 100%)",
 					cloud: "#eef7fb",
 					cloudShadow: "rgba(178, 212, 226, 0.86)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
