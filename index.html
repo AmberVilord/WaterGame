@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>River Guardians</title>
 	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@600;700;800&display=swap');
+
 		:root {
 			--cw-yellow: #ffc907;
 			--cw-blue: #2e9df7;
@@ -15,13 +17,22 @@
 			--warn: #b77835;
 		}
 
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+		}
+
 		* { box-sizing: border-box; }
 
 		body {
 			margin: 0;
-			min-height: 100vh;
-			font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-			background: linear-gradient(180deg, #eef9ff 0%, #bce6ff 50%, #93d1ff 100%);
+			height: 100dvh;
+			font-family: "Libre Baskerville", "Baskervville", "Playfair Display", serif;
+			background-image: url("https://images.unsplash.com/photo-1508624217470-5ef0f947d8be?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
 			color: var(--ink);
 			display: flex;
 			justify-content: center;
@@ -30,19 +41,30 @@
 
 		.app {
 			width: min(1100px, 100%);
+			height: calc(100dvh - 1.2rem);
+			max-height: calc(100dvh - 1.2rem);
 			background: rgba(255, 255, 255, 0.9);
 			border: 3px solid var(--cw-blue);
 			border-radius: 16px;
 			overflow: hidden;
 			box-shadow: 0 12px 24px rgba(17, 76, 122, 0.16);
+			display: flex;
+			flex-direction: column;
 		}
 
 		.menu {
-			min-height: 82vh;
+			height: 100%;
 			display: grid;
 			place-items: center;
 			padding: 1.2rem;
 			background: linear-gradient(180deg, #f2fcff 0%, #d6f0ff 45%, #bfe3ff 100%);
+		}
+
+		#gameScreen {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			min-height: 0;
 		}
 
 		.menu-card {
@@ -122,32 +144,24 @@
 		}
 
 		.logo {
-			display: inline-flex;
-			align-items: center;
-			gap: 0.45rem;
-			background: #fff8dc;
-			border: 2px solid var(--cw-yellow);
-			border-radius: 999px;
-			padding: 0.3rem 0.8rem;
-			font-weight: 800;
+			display: inline-block;
+			background: transparent;
+			border: 0;
+			padding: 0;
 			margin-bottom: 0.8rem;
 		}
 
-		.logo .mark {
-			width: 24px;
-			height: 24px;
-			border-radius: 6px;
-			background: var(--cw-blue);
-			display: grid;
-			place-items: center;
-			color: #fff;
-			font-size: 14px;
+		.logo img {
+			display: block;
+			height: 220px;
+			width: auto;
 		}
 
 		h1 {
 			margin: 0;
 			font-size: clamp(1.6rem, 4vw, 2.6rem);
 			color: var(--cw-deep);
+			font-family: "Playfair Display", "Libre Baskerville", serif;
 		}
 
 		.subtitle {
@@ -190,67 +204,69 @@
 		.hidden { display: none !important; }
 
 		.topbar {
-			display: flex;
-			flex-wrap: wrap;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto auto;
 			align-items: center;
-			justify-content: space-between;
 			gap: 0.55rem;
 			padding: 0.7rem 0.85rem;
-			background: linear-gradient(90deg, var(--cw-yellow), #ffe381);
+			background: #ffffff;
 			border-bottom: 3px solid var(--cw-blue);
+		}
+
+		.title-metrics {
+			display: flex;
+			flex-direction: column;
+			gap: 0.36rem;
+			min-width: 0;
 		}
 
 		.top-title {
 			font-weight: 900;
 			color: #1d2d3a;
+			font-family: "Playfair Display", "Libre Baskerville", serif;
 		}
 
 		.brand-chip {
 			display: inline-flex;
 			align-items: center;
-			gap: 0.35rem;
-			background: #fff;
-			border: 2px solid var(--cw-blue);
-			border-radius: 999px;
-			padding: 0.22rem 0.5rem;
-			font-size: 0.78rem;
-			font-weight: 800;
-			color: var(--cw-deep);
+			justify-content: center;
+			background: transparent;
+			border: 0;
+			border-radius: 0;
+			padding: 0;
 		}
 
-		.brand-chip .mark {
-			width: 18px;
-			height: 18px;
-			border-radius: 5px;
-			background: var(--cw-blue);
-			display: grid;
-			place-items: center;
-			color: #fff;
-			font-size: 11px;
+		.brand-chip img {
+			display: block;
+			height: 60px;
+			width: auto;
 		}
 
 		.hud {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.45rem;
-			align-items: center;
+			display: grid;
+			grid-template-columns: repeat(4, minmax(86px, 1fr));
+			gap: 0.35rem 0.45rem;
+			align-items: stretch;
+			min-width: 0;
 		}
 
 		.pill {
-			background: #fff;
-			border: 2px solid var(--cw-blue);
+			background: rgba(48, 53, 59, 0.94);
+			border: 1px solid var(--cw-yellow);
 			border-radius: 999px;
-			padding: 0.28rem 0.6rem;
-			font-size: 0.9rem;
+			padding: 0.2rem 0.5rem;
+			font-size: 0.82rem;
 			font-weight: 800;
-			min-width: 96px;
+			min-width: 0;
 			text-align: center;
+			color: var(--cw-yellow);
 		}
 
 		.actions {
 			display: flex;
 			gap: 0.4rem;
-			margin-left: auto;
+			justify-self: end;
+			align-self: center;
 		}
 
 		button {
@@ -268,7 +284,8 @@
 
 		.scene {
 			position: relative;
-			min-height: 74vh;
+			flex: 1 1 auto;
+			min-height: 0;
 			overflow: hidden;
 			--grass-start: 46%;
 			background: linear-gradient(180deg, #8fd5ff 0%, #69bdff 45%, #68c87f 46%, #62ba74 100%);
@@ -294,27 +311,31 @@
 			left: 44%;
 			width: clamp(115px, 15vw, 170px);
 			height: clamp(58px, 8vw, 82px);
-			background: radial-gradient(130% 102% at 50% 38%, #8c99a8 0%, #6f7b8b 58%, #515c6a 100%);
+			background: radial-gradient(132% 104% at 50% 38%, #8f9cad 0%, #738090 58%, #515c6a 100%);
 			border-radius: 999px;
+			border: none;
 			box-shadow: inset 0 -12px 0 #3f4b59, inset 0 6px 10px #8d9aaa, 0 7px 14px rgba(28, 35, 44, 0.3);
 			z-index: 8;
 			cursor: grab;
 			touch-action: none;
 			user-select: none;
 			isolation: isolate;
+			filter: none;
 		}
 
 		.cloud::before,
 		.cloud::after {
 			content: "";
 			position: absolute;
-			background: radial-gradient(122% 100% at 50% 40%, #8f9cad 0%, #6f7b8b 62%, #515c6a 100%);
+			background: radial-gradient(118% 98% at 50% 38%, #93a0b0 0%, #778494 60%, #556172 100%);
 			border-radius: 50%;
 			opacity: 1;
+			filter: none;
+			mix-blend-mode: normal;
 		}
 
-		.cloud::before { width: 50%; height: 86%; left: 8%; top: -34%; }
-		.cloud::after { width: 44%; height: 76%; right: 8%; top: -33%; }
+		.cloud::before { width: 60%; height: 90%; left: 2%; top: -31%; }
+		.cloud::after { width: 56%; height: 86%; right: 2%; top: -30%; }
 
 		@keyframes cloud-drift {
 			0% { transform: translateX(0); }
@@ -709,18 +730,18 @@
 			position: absolute;
 			inset: 0;
 			pointer-events: none;
-			z-index: 46;
+			z-index: 1;
 			overflow: hidden;
 		}
 
 		.confetti-piece {
 			position: absolute;
 			top: -12%;
-			width: 10px;
-			height: 16px;
+			width: 18px;
+			height: 28px;
 			opacity: 0.92;
 			border-radius: 2px;
-			animation: confetti-fall 1.8s linear forwards;
+			animation: confetti-fall 5s linear forwards;
 		}
 
 		.pollution {
@@ -1040,7 +1061,8 @@
 		.scene.forest-creek-mode .inventory {
 			top: auto;
 			bottom: 0.6rem;
-			right: 0.6rem;
+			left: 0.6rem;
+			right: auto;
 		}
 
 		.inventory h3 {
@@ -1252,6 +1274,11 @@
 			z-index: 40;
 			background: rgba(4, 39, 59, 0.64);
 			padding: 1rem;
+			overflow: hidden;
+		}
+
+		.end-overlay.win-state {
+			animation: win-overlay-glow 0.9s ease;
 		}
 
 		.end-card {
@@ -1261,6 +1288,8 @@
 			border-radius: 14px;
 			padding: 1rem 1.1rem;
 			text-align: center;
+			position: relative;
+			z-index: 2;
 		}
 
 		.end-card.win-celebration {
@@ -1484,8 +1513,8 @@
 
 		@keyframes confetti-fall {
 			0% { transform: translateY(-12%) rotate(0deg); opacity: 0; }
-			12% { opacity: 0.95; }
-			100% { transform: translateY(118%) rotate(540deg); opacity: 0.05; }
+			8% { opacity: 0.96; }
+			100% { transform: translateY(122%) rotate(960deg); opacity: 0.08; }
 		}
 
 		@keyframes victory-pop {
@@ -1494,25 +1523,28 @@
 			100% { transform: scale(1); }
 		}
 
+		@keyframes win-overlay-glow {
+			0% { background: rgba(4, 39, 59, 0.5); }
+			55% { background: rgba(11, 66, 104, 0.68); }
+			100% { background: rgba(4, 39, 59, 0.64); }
+		}
+
 		@media (max-width: 900px) {
 			.region-grid { grid-template-columns: 1fr; }
 			.topbar {
-				justify-content: center;
+				grid-template-columns: 1fr;
 				padding: 0.6rem;
 			}
-			.top-title {
-				width: 100%;
-				text-align: center;
-			}
+			.title-metrics { width: 100%; }
+			.top-title { text-align: center; }
 			.brand-chip {
-				order: 3;
+				justify-self: center;
 			}
 			.hud {
 				width: 100%;
-				justify-content: center;
 			}
 			.actions {
-				margin-left: 0;
+				justify-self: stretch;
 				width: 100%;
 			}
 			.actions button {
@@ -1559,6 +1591,8 @@
 		@media (max-width: 540px) {
 			body { padding: 0; }
 			.app {
+				height: 100dvh;
+				max-height: 100dvh;
 				border-radius: 0;
 				border-left-width: 0;
 				border-right-width: 0;
@@ -1579,10 +1613,7 @@
 				min-height: 40px;
 				padding: 0.45rem 0.55rem;
 			}
-			.scene {
-				min-height: 68vh;
-				--grass-start: 44%;
-			}
+			.scene { --grass-start: 44%; }
 			.sky-note {
 				left: 0.45rem;
 				top: 0.45rem;
@@ -1627,8 +1658,7 @@
 		<section id="menuScreen" class="menu" aria-label="Main menu">
 			<div class="menu-card">
 				<div class="logo" aria-label="charity water logo">
-					<span class="mark">💧</span>
-					<span>charity: water</span>
+					<img src="https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/102013/charity_water-converted.png?itok=2ZWJ5Cuz" alt="charity: water logo" />
 				</div>
 				<h1>River Guardians</h1>
 				<p class="subtitle">Navigating Water Systems for Global Impact.</p>
@@ -1661,20 +1691,21 @@
 
 		<section id="gameScreen" class="hidden" aria-label="River guardians gameplay">
 			<header class="topbar">
-				<div class="top-title" id="regionTitle">River Guardians</div>
-				<div class="brand-chip" aria-label="charity water brand">
-					<span class="mark">💧</span>
-					<span>charity: water</span>
+				<div class="title-metrics">
+					<div class="top-title" id="regionTitle">River Guardians</div>
+					<div class="hud" id="hud">
+						<div class="pill" id="scorePill">Score: 0</div>
+						<div class="pill" id="qualityPill">Quality: 0%</div>
+						<div class="pill" id="waterPill">Water: 0%</div>
+						<div class="pill" id="rainPill">Rain: 0</div>
+						<div class="pill" id="pollutionPill">Pollution: 100%</div>
+						<div class="pill" id="animalHealthPill">Animal Health: 0%</div>
+						<div class="pill" id="timePill">Time: 120s</div>
+						<div class="pill" id="targetPill">Target: 0%</div>
+					</div>
 				</div>
-				<div class="hud" id="hud">
-					<div class="pill" id="scorePill">Score: 0</div>
-					<div class="pill" id="qualityPill">Quality: 0%</div>
-					<div class="pill" id="waterPill">Water: 0%</div>
-					<div class="pill" id="rainPill">Rain: 0</div>
-					<div class="pill" id="pollutionPill">Pollution: 100%</div>
-					<div class="pill" id="animalHealthPill">Animal Health: 0%</div>
-					<div class="pill" id="timePill">Time: 120s</div>
-					<div class="pill" id="targetPill">Target: 0%</div>
+				<div class="brand-chip" aria-label="charity water brand">
+					<img src="https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/102013/charity_water-converted.png?itok=2ZWJ5Cuz" alt="charity: water logo" />
 				</div>
 				<div class="actions">
 					<button id="restartBtn" type="button" aria-label="Reset gameplay for current region">Reset Gameplay</button>
@@ -1760,9 +1791,9 @@
 
 				<div class="status-msg" id="statusMsg">Tap or drag the cloud to direct rain.</div>
 				<div class="scene-popup" id="scenePopup" aria-live="polite"></div>
-				<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
 				<div class="end-overlay" id="endOverlay" aria-live="polite">
+					<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 					<div class="end-card">
 						<h2 id="endTitle">Region Result</h2>
 						<p id="endSummary"></p>
@@ -1849,7 +1880,7 @@
 		const retryBtn = document.getElementById("retryBtn");
 		const endMenuBtn = document.getElementById("endMenuBtn");
 		const HIGH_SCORE_STORAGE_KEY = "riverGuardiansHighScores";
-		const HIGH_SCORE_LIMIT = 10;
+		const HIGH_SCORE_LIMIT = 5;
 		const animalLabels = {
 			fish: "river trout",
 			otter: "gold carp",
@@ -2151,18 +2182,21 @@
 			if (!confettiLayer) return;
 			confettiLayer.innerHTML = "";
 			const colors = ["#ffc907", "#2e9df7", "#114c7a", "#2ebf7e", "#ffffff"];
-			for (let i = 0; i < 70; i += 1) {
+			for (let i = 0; i < 220; i += 1) {
 				const piece = document.createElement("span");
 				piece.className = "confetti-piece";
 				piece.style.left = `${Math.random() * 100}%`;
 				piece.style.background = colors[i % colors.length];
-				piece.style.animationDelay = `${Math.random() * 0.45}s`;
-				piece.style.animationDuration = `${1.6 + Math.random() * 1.1}s`;
+				piece.style.animationDelay = `${Math.random() * 0.7}s`;
+				piece.style.animationDuration = `${4.4 + Math.random() * 1.2}s`;
+				const width = 12 + Math.random() * 14;
+				piece.style.width = `${width}px`;
+				piece.style.height = `${width * 1.5}px`;
 				confettiLayer.appendChild(piece);
 			}
 			setTimeout(() => {
 				confettiLayer.innerHTML = "";
-			}, 3200);
+			}, 5000);
 		}
 
 		function updateToolButtons() {
@@ -2551,7 +2585,7 @@
 
 		function buildResults(win, reason) {
 			const healthyCount = countHealthyAnimals();
-			endTitle.textContent = win ? "Region Restored 🌿" : "Region Still Polluted";
+			endTitle.textContent = win ? "🎉 Region Restored!" : "Region Still Polluted";
 			endSummary.textContent = win
 				? `Excellent work in ${state.region.name}. The river is flowing clean and wildlife is thriving.`
 				: `Run ended: ${reason}. Retry this region or return to region select.`;
@@ -2569,17 +2603,21 @@
 			stopTwists();
 			if (win) {
 				scene.classList.add("thriving");
-				celebrateWin();
 				showScenePopup("🎉 River restored! Great work!");
 				if (endCard) endCard.classList.add("win-celebration");
+				endOverlay.classList.add("win-state");
 				cleanSound(940);
 			} else {
 				if (endCard) endCard.classList.remove("win-celebration");
+				endOverlay.classList.remove("win-state");
 				animalEls.forEach((animal) => animal.classList.add("distressed"));
 			}
 			buildResults(win, reason);
 			prepareHighScoreEntry();
 			endOverlay.style.display = "flex";
+			if (win) {
+				setTimeout(() => celebrateWin(), 180);
+			}
 		}
 
 		function startTimer() {
@@ -2637,6 +2675,7 @@
 			});
 			scene.classList.remove("thriving");
 			if (endCard) endCard.classList.remove("win-celebration");
+			endOverlay.classList.remove("win-state");
 			endOverlay.style.display = "none";
 			vegetation.style.opacity = "";
 			scenePopup.classList.remove("show");
@@ -2709,6 +2748,7 @@
 			state.gameEnded = false;
 			state.pendingHighScoreValue = null;
 			endOverlay.style.display = "none";
+			endOverlay.classList.remove("win-state");
 			instructionsOverlay.style.display = "none";
 			scene.classList.remove("thriving");
 			while (plantedTrees.length) {
