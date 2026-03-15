@@ -246,6 +246,7 @@
 			position: relative;
 			min-height: 74vh;
 			overflow: hidden;
+			--grass-start: 46%;
 			background: linear-gradient(180deg, #8fd5ff 0%, #69bdff 45%, #68c87f 46%, #62ba74 100%);
 		}
 
@@ -336,17 +337,20 @@
 
 		.river-wrap {
 			position: absolute;
+			top: calc(var(--grass-start) + 2%);
 			bottom: 7%;
 			left: 50%;
-			transform: translateX(-50%);
+			transform: translateX(-50%) translateY(0);
 			width: min(95%, 900px);
 			z-index: 4;
+			display: flex;
+			align-items: flex-end;
 		}
 
 		.river {
 			position: relative;
 			width: 100%;
-			height: clamp(170px, 25vw, 250px);
+			height: min(100%, clamp(170px, 25vw, 250px));
 			border-radius: 42% 58% 63% 37% / 54% 39% 61% 46%;
 			background: radial-gradient(circle at 45% 36%, #7bb8d3 0%, #4d86a2 68%, #325e75 100%);
 			border: 5px solid rgba(255, 255, 255, 0.72);
@@ -959,7 +963,7 @@
 				</div>
 				<div id="cloud" class="cloud" role="button" aria-label="Rain cloud"></div>
 
-				<div class="river-wrap">
+				<div class="river-wrap" id="riverWrap">
 					<div class="forest-ring" id="forestRing" aria-hidden="true">
 						<div class="tree tall"></div>
 						<div class="tree short offset-down"></div>
@@ -1039,6 +1043,7 @@
 
 		const scene = document.getElementById("scene");
 		const mountains = document.getElementById("mountains");
+		const riverWrap = document.getElementById("riverWrap");
 		const river = document.getElementById("river");
 		const flow = document.getElementById("flow");
 		const forestRing = document.getElementById("forestRing");
@@ -1082,6 +1087,8 @@
 					scene: "linear-gradient(180deg, #98d7ff 0%, #74c4ff 44%, #82d08e 45%, #72bf7d 100%)",
 					cloud: "#f8fcff",
 					cloudShadow: "rgba(196, 228, 247, 0.85)",
+					riverOffsetTop: "calc(var(--grass-start) + 2%)",
+					riverTranslateY: "0%",
 					vegetation: ["🌾", "🌿", "🍃", "🌾", "🌿"],
 					riverShape: {
 						height: "clamp(170px, 25vw, 250px)",
@@ -1110,6 +1117,8 @@
 					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #89c78d 45%, #6dad72 100%)",
 					cloud: "#eef7fb",
 					cloudShadow: "rgba(178, 212, 226, 0.86)",
+					riverOffsetTop: "calc(var(--grass-start) + 2%)",
+					riverTranslateY: "20%",
 					mountains: true,
 					vegetation: ["🌱", "🪷", "🌿", "🌾", "🪷"],
 					riverShape: {
@@ -1139,6 +1148,8 @@
 					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #6cae71 45%, #548f5a 100%)",
 					cloud: "#e8f3fa",
 					cloudShadow: "rgba(150, 188, 210, 0.88)",
+					riverOffsetTop: "calc(var(--grass-start) + 2%)",
+					riverTranslateY: "0%",
 					mountains: false,
 					vegetation: ["🌲", "🌿", "🍀", "🌲", "🍃"],
 					riverShape: {
@@ -1634,6 +1645,8 @@
 			const theme = state.region.appearance;
 			scene.style.background = theme.scene;
 			mountains.style.display = theme.mountains ? "block" : "none";
+			riverWrap.style.top = theme.riverOffsetTop || "calc(var(--grass-start) + 2%)";
+			riverWrap.style.transform = `translateX(-50%) translateY(${theme.riverTranslateY || "0%"})`;
 			cloud.style.background = theme.cloud;
 			cloud.style.boxShadow = `inset 0 -10px 0 ${theme.cloudShadow}`;
 			river.style.height = theme.riverShape.height;
