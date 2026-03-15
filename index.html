@@ -499,17 +499,18 @@
 			transform: none;
 			padding: 0;
 			align-items: stretch;
-			overflow: hidden;
+			overflow: visible;
 		}
 
 		.scene.forest-creek-mode .river {
 			position: absolute;
-			left: -32%;
-			bottom: -2%;
-			width: 186%;
+			left: -24%;
+			bottom: -1%;
+			width: 166%;
 			height: clamp(58px, 6.8vw, 86px) !important;
 			transform: rotate(-27deg) !important;
 			border-radius: 68% 32% 56% 44% / 50% 69% 31% 50% !important;
+			overflow: visible;
 			box-shadow:
 				0 0 0 2px rgba(124, 183, 98, 0.55),
 				0 0 0 6px rgba(82, 142, 62, 0.34),
@@ -537,9 +538,9 @@
 
 		.scene.forest-creek-mode .river::after {
 			right: 7%;
-			top: -74%;
+			top: -52%;
 			width: 38%;
-			height: 238%;
+			height: 198%;
 			border-radius: 30% 70% 40% 60% / 74% 34% 66% 26%;
 			transform: rotate(-20deg);
 		}
