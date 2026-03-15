@@ -478,7 +478,7 @@
 		}
 
 		.scene.river-bank-mode .grass-tuft {
-			display: none;
+			display: block;
 		}
 
 		.scene.wetland-mode .river {
@@ -504,15 +504,16 @@
 
 		.scene.forest-creek-mode .river {
 			position: absolute;
-			left: -18%;
-			bottom: 8%;
-			width: 150%;
-			height: clamp(62px, 7.4vw, 92px) !important;
-			transform: rotate(-22deg) !important;
+			left: -32%;
+			bottom: -2%;
+			width: 186%;
+			height: clamp(58px, 6.8vw, 86px) !important;
+			transform: rotate(-27deg) !important;
 			border-radius: 68% 32% 56% 44% / 50% 69% 31% 50% !important;
 			box-shadow:
-				0 0 0 1px rgba(120, 177, 96, 0.4),
-				0 0 0 4px rgba(80, 138, 61, 0.25),
+				0 0 0 2px rgba(124, 183, 98, 0.55),
+				0 0 0 6px rgba(82, 142, 62, 0.34),
+				0 0 0 10px rgba(54, 112, 39, 0.18),
 				inset 0 -12px 0 rgba(7, 53, 83, 0.32),
 				0 8px 12px rgba(9, 55, 86, 0.2);
 		}
@@ -526,21 +527,25 @@
 		}
 
 		.scene.forest-creek-mode .river::before {
-			left: 20%;
-			top: -34%;
-			width: 31%;
-			height: 168%;
+			left: 18%;
+			top: -38%;
+			width: 32%;
+			height: 176%;
 			border-radius: 74% 26% 60% 40% / 42% 72% 28% 58%;
-			transform: rotate(15deg);
+			transform: rotate(17deg);
 		}
 
 		.scene.forest-creek-mode .river::after {
-			right: 18%;
-			top: -30%;
-			width: 34%;
-			height: 162%;
+			right: 7%;
+			top: -74%;
+			width: 38%;
+			height: 238%;
 			border-radius: 30% 70% 40% 60% / 74% 34% 66% 26%;
-			transform: rotate(-18deg);
+			transform: rotate(-20deg);
+		}
+
+		.scene.forest-creek-mode .grass-tuft {
+			display: none;
 		}
 
 		.rock {
@@ -1459,6 +1464,7 @@
 				</div>
 
 				<div class="status-msg" id="statusMsg">Tap or drag the cloud to direct rain.</div>
+				<div class="scene-popup" id="scenePopup" aria-live="polite"></div>
 
 				<div class="end-overlay" id="endOverlay" aria-live="polite">
 					<div class="end-card">
@@ -1500,6 +1506,7 @@
 		const targetPill = document.getElementById("targetPill");
 		const phaseMsg = document.getElementById("phaseMsg");
 		const statusMsg = document.getElementById("statusMsg");
+		const scenePopup = document.getElementById("scenePopup");
 
 		const scene = document.getElementById("scene");
 		const mountains = document.getElementById("mountains");
@@ -1678,7 +1685,8 @@
 			cloudDragging: false,
 			cloudRect: null,
 			lastDragRainAt: 0,
-			pendingRegion: null
+			pendingRegion: null,
+			allTrashPromptShown: false
 		};
 
 		function updateHUD() {
@@ -1705,6 +1713,13 @@
 
 		function setStatus(message) {
 			statusMsg.textContent = message;
+		}
+
+		function showScenePopup(message) {
+			scenePopup.textContent = message;
+			scenePopup.classList.remove("show");
+			void scenePopup.offsetWidth;
+			scenePopup.classList.add("show");
 		}
 
 		function updateToolButtons() {
@@ -1865,7 +1880,7 @@
 
 			pollutionSpots.forEach((spot, index) => {
 				const level = state.pollutionLevels[index];
-				spot.style.opacity = `${Math.max(0.08, level / 130)}`;
+				spot.style.opacity = `${level <= 0 ? 0 : Math.max(0.08, level / 130)}`;
 				spot.style.transform = `scale(${0.65 + level / 160})`;
 			});
 
@@ -1974,11 +1989,25 @@
 			spotEl.classList.add("cleaning");
 			const steps = 6;
 			let tick = 0;
+			let poppedFinal = false;
 			const amountPerStep = cfg.cleanup / steps;
 			const interval = setInterval(() => {
 				tick += 1;
 				state.pollutionLevels[index] = Math.max(0, state.pollutionLevels[index] - amountPerStep);
+				if (!poppedFinal && state.pollutionLevels[index] <= 0.01) {
+					state.pollutionLevels[index] = 0;
+					poppedFinal = true;
+					spotEl.classList.add("pop-out");
+					setTimeout(() => {
+						spotEl.classList.remove("active", "pop-out");
+					}, 260);
+				}
 				recalcQuality();
+				if (!state.allTrashPromptShown && state.pollutionLevels.every((level) => level <= 0)) {
+					state.allTrashPromptShown = true;
+					showScenePopup("Hurry and rescue the animals!");
+					setStatus("Hurry and rescue the animals!");
+				}
 				if (tick >= steps) {
 					clearInterval(interval);
 					spotEl.classList.remove("cleaning");
@@ -2141,6 +2170,7 @@
 			state.filterCooldownUntil = { plant: 0, net: 0 };
 			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
 			state.phase = "rain";
+			state.allTrashPromptShown = false;
 			while (plantedTrees.length) {
 				const planted = plantedTrees.pop();
 				planted.remove();
@@ -2148,7 +2178,7 @@
 
 			tools.forEach((tool) => { tool.disabled = true; });
 			pollutionSpots.forEach((spot) => {
-				spot.classList.remove("active", "cleaning");
+				spot.classList.remove("active", "cleaning", "pop-out");
 				spot.style.opacity = "0";
 				spot.style.transform = "scale(0.9)";
 			});
@@ -2161,6 +2191,7 @@
 			flow.style.animationDuration = "2.6s";
 			endOverlay.style.display = "none";
 			vegetation.style.opacity = "";
+			scenePopup.classList.remove("show");
 
 			phaseMsg.textContent = "Phase 1: Tap or drag cloud to build rainfall.";
 			setStatus("Rain first. Filters and wildlife unlock as quality rises.");
