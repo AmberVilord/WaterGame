@@ -205,6 +205,30 @@
 			color: #1d2d3a;
 		}
 
+		.brand-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			background: #fff;
+			border: 2px solid var(--cw-blue);
+			border-radius: 999px;
+			padding: 0.22rem 0.5rem;
+			font-size: 0.78rem;
+			font-weight: 800;
+			color: var(--cw-deep);
+		}
+
+		.brand-chip .mark {
+			width: 18px;
+			height: 18px;
+			border-radius: 5px;
+			background: var(--cw-blue);
+			display: grid;
+			place-items: center;
+			color: #fff;
+			font-size: 11px;
+		}
+
 		.hud {
 			display: flex;
 			flex-wrap: wrap;
@@ -391,7 +415,7 @@
 		}
 
 		.scene.forest-creek-mode .forest-ground {
-			display: block;
+			display: none;
 		}
 
 		.road {
@@ -512,7 +536,7 @@
 
 		.scene.river-bank-mode .river::before,
 		.scene.river-bank-mode .river::after {
-			content: "";
+			content: none;
 			position: absolute;
 			left: 0;
 			right: 0;
@@ -566,7 +590,7 @@
 		.scene.forest-creek-mode .river {
 			position: absolute;
 			left: 0;
-			bottom: 50%;
+			bottom: 60%;
 			width: 100%;
 			height: clamp(44px, 5vw, 64px) !important;
 			transform: rotate(0deg) !important;
@@ -588,12 +612,12 @@
 			pointer-events: none;
 		}
 
-		.scene.forest-creek-mode .fish1 { left: 10%; top: 44%; }
-		.scene.forest-creek-mode .fish2 { left: 58%; top: 32%; }
-		.scene.forest-creek-mode .frog1 { left: 76%; top: 24%; }
-		.scene.forest-creek-mode .bird1 { left: 34%; top: 46%; }
-		.scene.forest-creek-mode .pad1 { left: 72%; top: 21%; }
-		.scene.forest-creek-mode .pad2 { left: 28%; top: 42%; }
+		.scene.forest-creek-mode .fish1 { left: 10%; top: 34%; }
+		.scene.forest-creek-mode .fish2 { left: 58%; top: 22%; }
+		.scene.forest-creek-mode .frog1 { left: 76%; top: 14%; }
+		.scene.forest-creek-mode .bird1 { left: 34%; top: 36%; }
+		.scene.forest-creek-mode .pad1 { left: 72%; top: 11%; }
+		.scene.forest-creek-mode .pad2 { left: 28%; top: 32%; }
 
 		.scene.forest-creek-mode .grass-tuft {
 			display: none;
@@ -677,6 +701,25 @@
 			);
 			animation: flow 2.6s linear infinite;
 			opacity: 0.45;
+			display: none;
+		}
+
+		.confetti-layer {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			z-index: 35;
+			overflow: hidden;
+		}
+
+		.confetti-piece {
+			position: absolute;
+			top: -12%;
+			width: 10px;
+			height: 16px;
+			opacity: 0.92;
+			border-radius: 2px;
+			animation: confetti-fall 1.8s linear forwards;
 		}
 
 		.pollution {
@@ -1085,7 +1128,7 @@
 			bottom: 3.5%;
 			transform: translateX(-50%);
 			width: min(92%, 880px);
-			display: flex;
+			display: none;
 			justify-content: space-between;
 			font-size: clamp(1.2rem, 2.7vw, 2rem);
 			opacity: 0.2;
@@ -1363,23 +1406,129 @@
 			100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
 		}
 
+		@keyframes confetti-fall {
+			0% { transform: translateY(-12%) rotate(0deg); opacity: 0; }
+			12% { opacity: 0.95; }
+			100% { transform: translateY(118%) rotate(540deg); opacity: 0.05; }
+		}
+
 		@media (max-width: 900px) {
 			.region-grid { grid-template-columns: 1fr; }
+			.topbar {
+				justify-content: center;
+				padding: 0.6rem;
+			}
+			.top-title {
+				width: 100%;
+				text-align: center;
+			}
+			.brand-chip {
+				order: 3;
+			}
+			.hud {
+				width: 100%;
+				justify-content: center;
+			}
+			.actions {
+				margin-left: 0;
+				width: 100%;
+			}
+			.actions button {
+				flex: 1;
+				min-height: 42px;
+			}
 			.inventory {
 				left: 0.6rem;
-				right: auto;
+				right: 0.6rem;
 				top: auto;
-				bottom: 3.4rem;
+				bottom: 0.6rem;
+				width: auto;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 0.3rem;
+				padding: 0.3rem;
+			}
+			.inventory h3 {
+				grid-column: 1 / -1;
+			}
+			.inventory .tool {
+				margin-top: 0;
+				min-height: 40px;
+				padding: 0.35rem 0.45rem;
+			}
+			.inventory .tree-tool {
+				grid-column: 1 / -1;
+			}
+			.status-msg {
+				left: 0.6rem;
+				right: 0.6rem;
+				bottom: 7.1rem;
+				max-width: none;
+				font-size: 0.84rem;
+			}
+			.scene-popup {
+				top: 0.7rem;
+				max-width: calc(100% - 1.2rem);
+				text-align: center;
 			}
 			.sky-note { font-size: 0.82rem; }
 		}
 
 		@media (max-width: 540px) {
-			.topbar { justify-content: center; }
-			.actions { margin-left: 0; width: 100%; }
-			.actions button { flex: 1; }
-			.pill { min-width: 86px; font-size: 0.82rem; }
-			.scene { min-height: 80vh; }
+			body { padding: 0; }
+			.app {
+				border-radius: 0;
+				border-left-width: 0;
+				border-right-width: 0;
+			}
+			.topbar { gap: 0.45rem; }
+			.hud { gap: 0.32rem; }
+			.pill {
+				min-width: 74px;
+				font-size: 0.76rem;
+				padding: 0.24rem 0.45rem;
+			}
+			.actions {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 0.35rem;
+			}
+			.actions button {
+				min-height: 40px;
+				padding: 0.45rem 0.55rem;
+			}
+			.scene {
+				min-height: 68vh;
+				--grass-start: 44%;
+			}
+			.sky-note {
+				left: 0.45rem;
+				top: 0.45rem;
+				padding: 0.28rem 0.45rem;
+				font-size: 0.75rem;
+				max-width: calc(100% - 0.9rem);
+			}
+			.inventory {
+				left: 0.45rem;
+				right: 0.45rem;
+				bottom: 0.45rem;
+			}
+			.inventory h3 { font-size: 0.54rem; }
+			.inventory .tool { font-size: 0.8rem; }
+			.status-msg {
+				left: 0.45rem;
+				right: 0.45rem;
+				bottom: 6.8rem;
+				font-size: 0.78rem;
+				padding: 0.35rem 0.45rem;
+			}
+			.scene-popup {
+				top: 0.45rem;
+				font-size: 0.76rem;
+				padding: 0.3rem 0.5rem;
+				max-width: calc(100% - 0.9rem);
+			}
+			.end-card { padding: 0.8rem 0.75rem; }
 			.results-grid { grid-template-columns: 1fr; }
 		}
 	</style>
@@ -1424,6 +1573,10 @@
 		<section id="gameScreen" class="hidden" aria-label="River guardians gameplay">
 			<header class="topbar">
 				<div class="top-title" id="regionTitle">River Guardians</div>
+				<div class="brand-chip" aria-label="charity water brand">
+					<span class="mark">💧</span>
+					<span>charity: water</span>
+				</div>
 				<div class="hud" id="hud">
 					<div class="pill" id="scorePill">Score: 0</div>
 					<div class="pill" id="qualityPill">Quality: 0%</div>
@@ -1435,7 +1588,7 @@
 					<div class="pill" id="targetPill">Target: 0%</div>
 				</div>
 				<div class="actions">
-					<button id="restartBtn" type="button">Restart Region</button>
+					<button id="restartBtn" type="button" aria-label="Reset gameplay for current region">Reset Gameplay</button>
 					<button id="backToMenuBtn" type="button">Region Select</button>
 				</div>
 			</header>
@@ -1518,6 +1671,7 @@
 
 				<div class="status-msg" id="statusMsg">Tap or drag the cloud to direct rain.</div>
 				<div class="scene-popup" id="scenePopup" aria-live="polite"></div>
+				<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
 				<div class="end-overlay" id="endOverlay" aria-live="polite">
 					<div class="end-card">
@@ -1560,6 +1714,7 @@
 		const phaseMsg = document.getElementById("phaseMsg");
 		const statusMsg = document.getElementById("statusMsg");
 		const scenePopup = document.getElementById("scenePopup");
+		const confettiLayer = document.getElementById("confettiLayer");
 
 		const scene = document.getElementById("scene");
 		const mountains = document.getElementById("mountains");
@@ -1612,7 +1767,7 @@
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
 					riverTranslateY: "-18%",
 					riverWidth: "100%",
-					vegetation: ["🌾", "🌿", "🍃", "🌾", "🌿"],
+					vegetation: [],
 					riverShape: {
 						height: "clamp(112px, 14vw, 158px)",
 						borderRadius: "5% 5% 5% 5% / 55% 55% 10% 10%",
@@ -1643,7 +1798,7 @@
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
 					riverTranslateY: "15%",
 					mountains: true,
-					vegetation: ["🌱", "🪷", "🌿", "🌾", "🪷"],
+					vegetation: [],
 					riverShape: {
 						height: "clamp(185px, 28vw, 265px)",
 						borderRadius: "58% 42% 48% 52% / 39% 66% 34% 61%",
@@ -1668,16 +1823,16 @@
 				filterCharges: { plant: 17, net: 16 },
 				filterCooldownMs: { plant: 1150, net: 1800 },
 				appearance: {
-					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #6cae71 45%, #548f5a 100%)",
+					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #7db77a 45%, #6ea96a 59%, #5f9b5d 74%, #4f874f 88%, #437746 100%)",
 					cloud: "linear-gradient(180deg, #72808f 0%, #5b6675 56%, #495463 100%)",
 					cloudShadow: "rgba(48, 57, 67, 0.9)",
-					riverOffsetTop: "calc(var(--grass-start) + 2%)",
-					riverTranslateY: "-10%",
+					riverOffsetTop: "calc(var(--grass-start) - 8%)",
+					riverTranslateY: "-20%",
 					riverLeft: "2px",
 					riverWidth: "calc(100% - 4px)",
 					riverTransform: "none",
 					mountains: false,
-					vegetation: ["🌲", "🌿", "🍀", "🌲", "🍃"],
+					vegetation: [],
 					riverShape: {
 						height: "clamp(160px, 23vw, 235px)",
 						borderRadius: "35% 65% 44% 56% / 62% 33% 67% 38%",
@@ -1742,8 +1897,34 @@
 			cloudRect: null,
 			lastDragRainAt: 0,
 			pendingRegion: null,
-			allTrashPromptShown: false
+			allTrashPromptShown: false,
+			twistIntervalId: null
 		};
+
+		function stopTwists() {
+			if (state.twistIntervalId) {
+				clearInterval(state.twistIntervalId);
+				state.twistIntervalId = null;
+			}
+		}
+
+		function startTwists() {
+			stopTwists();
+			state.twistIntervalId = setInterval(() => {
+				if (state.gameEnded || !state.region) return;
+				if (state.phase === "rain" || state.phase === "idle") return;
+				const index = Math.floor(Math.random() * state.pollutionLevels.length);
+				state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + 12);
+				state.score = Math.max(0, state.score - 4);
+				const surgeSpot = pollutionSpots[index];
+				surgeSpot.classList.add("active");
+				floatPoints("-4 surge", surgeSpot.offsetLeft + 6, surgeSpot.offsetTop - 2, "#8a2b2b");
+				showScenePopup("Debris surge! Pollution increased.");
+				setStatus("Twist: debris surge added pollution. React quickly to recover quality.");
+				recalcQuality();
+				updateHUD();
+			}, 14000);
+		}
 
 		function updateHUD() {
 			const pollutionAvg = Math.round(state.pollutionLevels.reduce((a, b) => a + b, 0) / state.pollutionLevels.length);
@@ -1776,6 +1957,24 @@
 			scenePopup.classList.remove("show");
 			void scenePopup.offsetWidth;
 			scenePopup.classList.add("show");
+		}
+
+		function celebrateWin() {
+			if (!confettiLayer) return;
+			confettiLayer.innerHTML = "";
+			const colors = ["#ffc907", "#2e9df7", "#114c7a", "#2ebf7e", "#ffffff"];
+			for (let i = 0; i < 70; i += 1) {
+				const piece = document.createElement("span");
+				piece.className = "confetti-piece";
+				piece.style.left = `${Math.random() * 100}%`;
+				piece.style.background = colors[i % colors.length];
+				piece.style.animationDelay = `${Math.random() * 0.45}s`;
+				piece.style.animationDuration = `${1.6 + Math.random() * 1.1}s`;
+				confettiLayer.appendChild(piece);
+			}
+			setTimeout(() => {
+				confettiLayer.innerHTML = "";
+			}, 3200);
 		}
 
 		function updateToolButtons() {
@@ -2179,9 +2378,11 @@
 			state.gameEnded = true;
 			clearInterval(state.timerId);
 			state.timerId = null;
+			stopTwists();
 			if (win) {
 				scene.classList.add("thriving");
-				flow.style.animationDuration = "1s";
+				celebrateWin();
+				showScenePopup("🎉 River restored! Great work!");
 				cleanSound(940);
 			} else {
 				animalEls.forEach((animal) => animal.classList.add("distressed"));
@@ -2244,15 +2445,16 @@
 				animal.style.opacity = "";
 			});
 			scene.classList.remove("thriving");
-			flow.style.animationDuration = "2.6s";
 			endOverlay.style.display = "none";
 			vegetation.style.opacity = "";
 			scenePopup.classList.remove("show");
+			if (confettiLayer) confettiLayer.innerHTML = "";
 
 			phaseMsg.textContent = "Phase 1: Tap or drag cloud to build rainfall.";
 			setStatus("Rain first. Filters and wildlife unlock as quality rises.");
 			updateToolButtons();
 			recalcQuality();
+			startTwists();
 			startTimer();
 		}
 
@@ -2295,9 +2497,17 @@
 			resetRegionState();
 		}
 
+		function resetGameplay() {
+			if (!state.regionKey) return;
+			resetRegionState();
+			showScenePopup("Gameplay reset");
+			setStatus("Gameplay reset. Use rain to rebuild water quality.");
+		}
+
 		function goToMenu() {
 			clearInterval(state.timerId);
 			state.timerId = null;
+			stopTwists();
 			state.phase = "idle";
 			state.region = null;
 			state.regionKey = null;
@@ -2343,13 +2553,11 @@
 		});
 
 		restartBtn.addEventListener("click", () => {
-			if (!state.regionKey) return;
-			resetRegionState();
+			resetGameplay();
 		});
 
 		retryBtn.addEventListener("click", () => {
-			if (!state.regionKey) return;
-			resetRegionState();
+			resetGameplay();
 		});
 
 		endMenuBtn.addEventListener("click", goToMenu);
