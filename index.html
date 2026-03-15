@@ -2154,6 +2154,23 @@
 			}
 		}
 
+		function getDebrisPressure(timeLeft) {
+			let amountMultiplier = 1;
+			let speedMultiplier = 1;
+
+			if (timeLeft <= 50) {
+				amountMultiplier *= 1.2;
+				speedMultiplier *= 1.2;
+			}
+
+			if (timeLeft <= 30) {
+				amountMultiplier *= 1.45;
+				speedMultiplier *= 1.45;
+			}
+
+			return { amountMultiplier, speedMultiplier };
+		}
+
 		function startTwists() {
 			stopTwists();
 			state.lastDebrisSurgeAt = 0;
@@ -2164,12 +2181,14 @@
 
 				const now = Date.now();
 				const rampSeconds = Math.max(0, 50 - state.timeLeft);
-				const requiredGapSeconds = Math.max(2, 12 - rampSeconds * 0.2);
+				const { amountMultiplier, speedMultiplier } = getDebrisPressure(state.timeLeft);
+				const requiredGapSeconds = Math.max(2, 12 - rampSeconds * 0.2) / speedMultiplier;
 				if (now - state.lastDebrisSurgeAt < requiredGapSeconds * 1000) return;
 				state.lastDebrisSurgeAt = now;
 
 				const index = Math.floor(Math.random() * state.pollutionLevels.length);
-				state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + 12);
+				const debrisAmount = 12 * amountMultiplier;
+				state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + debrisAmount);
 				state.score = Math.max(0, state.score - 4);
 				const surgeSpot = pollutionSpots[index];
 				surgeSpot.classList.add("active");
