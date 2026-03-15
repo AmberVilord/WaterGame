@@ -418,7 +418,13 @@
 			z-index: 4;
 			display: flex;
 			align-items: flex-end;
+			padding: 30px 30px 12px;
+			box-sizing: border-box;
 			overflow: hidden;
+		}
+
+		.scene.river-bank-mode #riverWrap {
+			padding: 0;
 		}
 
 		.river {
@@ -446,7 +452,7 @@
 			margin-left: -20px;
 			margin-right: -20px;
 			width: calc(100% + 40px);
-			border-radius: 0;
+			border-radius: 0 !important;
 			box-shadow: inset 0 -18px 0 rgba(7, 53, 83, 0.4), 0 10px 16px rgba(9, 55, 86, 0.23);
 		}
 
@@ -483,6 +489,79 @@
 				0 0 0 16px rgba(28, 73, 17, 0.12),
 				inset 0 -18px 0 rgba(7, 53, 83, 0.4),
 				0 10px 16px rgba(9, 55, 86, 0.23);
+		}
+
+		.scene.forest-creek-mode #riverWrap {
+			top: var(--grass-start);
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			transform: none;
+			padding: 0;
+			align-items: stretch;
+			overflow: hidden;
+		}
+
+		.scene.forest-creek-mode .river {
+			position: absolute;
+			left: -18%;
+			bottom: 8%;
+			width: 150%;
+			height: clamp(62px, 7.4vw, 92px) !important;
+			transform: rotate(-22deg) !important;
+			border-radius: 68% 32% 56% 44% / 50% 69% 31% 50% !important;
+			box-shadow:
+				0 0 0 1px rgba(120, 177, 96, 0.4),
+				0 0 0 4px rgba(80, 138, 61, 0.25),
+				inset 0 -12px 0 rgba(7, 53, 83, 0.32),
+				0 8px 12px rgba(9, 55, 86, 0.2);
+		}
+
+		.scene.forest-creek-mode .river::before,
+		.scene.forest-creek-mode .river::after {
+			content: "";
+			position: absolute;
+			background: inherit;
+			pointer-events: none;
+		}
+
+		.scene.forest-creek-mode .river::before {
+			left: 20%;
+			top: -34%;
+			width: 31%;
+			height: 168%;
+			border-radius: 74% 26% 60% 40% / 42% 72% 28% 58%;
+			transform: rotate(15deg);
+		}
+
+		.scene.forest-creek-mode .river::after {
+			right: 18%;
+			top: -30%;
+			width: 34%;
+			height: 162%;
+			border-radius: 30% 70% 40% 60% / 74% 34% 66% 26%;
+			transform: rotate(-18deg);
+		}
+
+		.rock {
+			position: absolute;
+			display: none;
+			pointer-events: none;
+			z-index: 8;
+			border-radius: 67% 33% 58% 42% / 46% 57% 43% 54%;
+			background:
+				radial-gradient(circle at 30% 22%, #d4d8dd 0%, #a5afb8 42%, #818b95 72%, #5b6570 100%),
+				radial-gradient(circle at 72% 70%, rgba(66, 72, 78, 0.35) 0%, rgba(66, 72, 78, 0) 70%);
+			box-shadow: inset -4px -4px 0 rgba(56, 62, 69, 0.35), inset 2px 2px 0 rgba(236, 240, 244, 0.28), 0 4px 6px rgba(31, 38, 44, 0.3);
+			border: 1px solid rgba(70, 78, 86, 0.45);
+		}
+
+		.r1 { left: 16%; top: 56%; width: 44px; height: 28px; transform: rotate(-9deg); }
+		.r2 { left: 46%; top: 39%; width: 52px; height: 34px; transform: rotate(12deg); }
+		.r3 { left: 76%; top: 50%; width: 40px; height: 26px; transform: rotate(-6deg); }
+
+		.scene.forest-creek-mode .rock {
+			display: block;
 		}
 
 		/* Grass tufts around pond edge */
@@ -546,15 +625,93 @@
 
 		.pollution {
 			position: absolute;
-			width: clamp(30px, 4vw, 46px);
-			height: clamp(30px, 4vw, 46px);
-			border-radius: 50%;
-			background: radial-gradient(circle at 35% 35%, #a76f43 0%, #6f4628 70%, #4e2f1a 100%);
+			width: clamp(28px, 4.4vw, 44px);
+			height: clamp(28px, 4.4vw, 44px);
+			background: transparent;
 			opacity: 0;
 			transform: scale(0.9);
 			transition: opacity 0.22s ease, transform 0.22s ease;
-			border: 2px solid rgba(255, 255, 255, 0.45);
-			z-index: 6;
+			z-index: 9;
+		}
+
+		.pollution::before,
+		.pollution::after {
+			content: "";
+			position: absolute;
+		}
+
+		/* p1: soda can */
+		.p1::before {
+			left: 8px;
+			top: 4px;
+			width: 14px;
+			height: 24px;
+			border-radius: 4px;
+			background: linear-gradient(180deg, #d9e5ef, #b4c3d0 45%, #93a5b4 100%);
+			box-shadow: inset 0 0 0 2px rgba(236, 244, 250, 0.55);
+		}
+		.p1::after {
+			left: 10px;
+			top: 2px;
+			width: 10px;
+			height: 4px;
+			border-radius: 2px;
+			background: #e6edf3;
+		}
+
+		/* p2: plastic bottle */
+		.p2::before {
+			left: 7px;
+			top: 4px;
+			width: 12px;
+			height: 26px;
+			background: linear-gradient(180deg, rgba(197, 227, 245, 0.88), rgba(123, 177, 208, 0.72));
+			clip-path: polygon(25% 0%, 75% 0%, 85% 16%, 85% 82%, 70% 100%, 30% 100%, 15% 82%, 15% 16%);
+		}
+		.p2::after {
+			left: 10px;
+			top: 1px;
+			width: 6px;
+			height: 5px;
+			border-radius: 2px;
+			background: #6da4c5;
+		}
+
+		/* p3: plastic bag */
+		.p3::before {
+			left: 4px;
+			top: 6px;
+			width: 22px;
+			height: 18px;
+			background: linear-gradient(160deg, rgba(235, 240, 244, 0.82), rgba(176, 187, 197, 0.78));
+			clip-path: polygon(8% 14%, 28% 0%, 42% 0%, 50% 14%, 58% 0%, 72% 0%, 92% 14%, 88% 100%, 12% 100%);
+		}
+		.p3::after {
+			left: 10px;
+			top: 2px;
+			width: 10px;
+			height: 6px;
+			border: 2px solid rgba(233, 239, 245, 0.9);
+			border-bottom: 0;
+			border-radius: 8px 8px 0 0;
+		}
+
+		/* p4: snack wrapper */
+		.p4::before {
+			left: 5px;
+			top: 9px;
+			width: 20px;
+			height: 12px;
+			background: linear-gradient(90deg, #f7d978, #e6b83c 40%, #cf8e2f 100%);
+			clip-path: polygon(0 25%, 8% 0, 92% 0, 100% 25%, 100% 75%, 92% 100%, 8% 100%, 0 75%);
+		}
+		.p4::after {
+			left: 13px;
+			top: 11px;
+			width: 5px;
+			height: 8px;
+			background: rgba(123, 68, 24, 0.55);
+			border-radius: 2px;
 		}
 
 		.pollution.active {
@@ -564,6 +721,31 @@
 
 		.pollution.cleaning {
 			animation: swirl 0.45s linear infinite;
+		}
+
+		.pollution.pop-out {
+			animation: trash-pop 0.28s ease-out forwards;
+		}
+
+		.scene-popup {
+			position: absolute;
+			left: 50%;
+			top: 1.1rem;
+			transform: translateX(-50%);
+			z-index: 32;
+			background: rgba(12, 66, 94, 0.94);
+			color: #fff;
+			border: 2px solid #9cd8f5;
+			border-radius: 12px;
+			padding: 0.35rem 0.7rem;
+			font-size: 0.86rem;
+			font-weight: 800;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.scene-popup.show {
+			animation: popup-fade 1.25s ease forwards;
 		}
 
 		.p1 { left: 16%; top: 52%; }
@@ -594,31 +776,38 @@
 		.animal-fish {
 			width: clamp(40px, 5.4vw, 60px);
 			height: clamp(18px, 2.5vw, 28px);
-			background: linear-gradient(90deg, #8fd0ec 0%, #5eaed4 35%, #3b8dbe 100%);
-			box-shadow: inset 0 -3px 0 rgba(21, 74, 104, 0.18);
+			background:
+				radial-gradient(circle at 23% 38%, rgba(245, 252, 255, 0.9) 0 10%, rgba(255, 255, 255, 0) 11%),
+				radial-gradient(120% 90% at 50% 78%, rgba(214, 237, 248, 0.72) 0%, rgba(214, 237, 248, 0) 65%),
+				linear-gradient(96deg, #9ad8ee 0%, #68bada 32%, #3f98c5 66%, #2f769d 100%);
+			box-shadow: inset 0 -4px 0 rgba(18, 66, 93, 0.24), inset 0 2px 0 rgba(232, 247, 255, 0.34);
 		}
 
 		.animal-fish::before {
 			right: -13px;
-			top: 4px;
+			top: 3px;
 			width: 16px;
 			height: 15px;
-			background: inherit;
+			background: linear-gradient(115deg, #6fb9d9, #2f769d);
 			clip-path: polygon(0 50%, 100% 0, 100% 100%);
+			filter: drop-shadow(0 1px 0 rgba(18, 55, 79, 0.28));
 			animation: tail-flick 0.45s ease-in-out infinite;
 		}
 
 		.animal-fish::after {
-			left: 7px;
-			top: 6px;
-			width: 8px;
-			height: 8px;
+			left: 6px;
+			top: 5px;
+			width: 9px;
+			height: 9px;
 			border-radius: 50%;
-			background: radial-gradient(circle at 30% 30%, #fff 0%, #1e3c4d 55%, #142733 100%);
+			background: radial-gradient(circle at 32% 28%, #fff 0 24%, #274a5e 25% 62%, #142733 63% 100%);
 		}
 
 		.animal-fish.gold {
-			background: linear-gradient(90deg, #f7d47b 0%, #dfab45 38%, #ba7f21 100%);
+			background:
+				radial-gradient(circle at 23% 38%, rgba(255, 251, 224, 0.92) 0 10%, rgba(255, 255, 255, 0) 11%),
+				radial-gradient(120% 90% at 50% 78%, rgba(253, 228, 165, 0.68) 0%, rgba(253, 228, 165, 0) 65%),
+				linear-gradient(96deg, #f7da8d 0%, #e1b154 35%, #c88a2e 68%, #9f6420 100%);
 		}
 
 		.lily-pad {
@@ -628,7 +817,8 @@
 			border-radius: 48% 52% 46% 54%;
 			background: radial-gradient(circle at 35% 35%, #6fc16e 0%, #41974a 70%, #2e7036 100%);
 			box-shadow: inset -4px -4px 0 rgba(22, 84, 32, 0.28);
-			z-index: 6;
+			z-index: 5;
+			pointer-events: none;
 			animation: pad-drift 5s ease-in-out infinite;
 		}
 
@@ -646,28 +836,64 @@
 		.animal-frog {
 			width: clamp(28px, 3.9vw, 40px);
 			height: clamp(20px, 2.9vw, 29px);
-			background: radial-gradient(circle at 50% 35%, #79c86e 0%, #4f9f50 65%, #387d3f 100%);
-			box-shadow: inset 0 -3px 0 rgba(26, 85, 31, 0.2);
+			background:
+				radial-gradient(circle at 34% 34%, rgba(156, 219, 135, 0.95) 0 16%, rgba(156, 219, 135, 0) 17%),
+				radial-gradient(circle at 68% 38%, rgba(147, 210, 126, 0.88) 0 14%, rgba(147, 210, 126, 0) 15%),
+				radial-gradient(125% 95% at 50% 82%, rgba(73, 142, 72, 0.75) 0%, rgba(73, 142, 72, 0) 72%),
+				linear-gradient(180deg, #86d37c 0%, #55a957 66%, #3b8544 100%);
+			box-shadow: inset 0 -3px 0 rgba(24, 78, 30, 0.24), inset 0 2px 0 rgba(206, 241, 193, 0.22);
 			animation: var(--route-animation);
 		}
 
 		.animal-frog::before {
-			top: -4px;
+			top: -5px;
 			left: 4px;
-			width: 8px;
-			height: 8px;
+			width: 9px;
+			height: 9px;
 			border-radius: 50%;
-			background: #eef8df;
-			box-shadow: 14px 0 0 #eef8df;
+			background: radial-gradient(circle at 44% 40%, #fff 0 28%, #2f4b38 29% 52%, #eff8df 53% 100%);
+			box-shadow: 14px 0 0 0 #eff8df;
 		}
 		.animal-frog::after {
-			top: 7px;
-			left: 9px;
-			width: 4px;
-			height: 4px;
-			border-radius: 50%;
-			background: #1f2d21;
-			box-shadow: 10px 0 0 #1f2d21;
+			top: 12px;
+			left: 5px;
+			width: 18px;
+			height: 9px;
+			border-radius: 50% 50% 62% 62%;
+			background: linear-gradient(180deg, rgba(58, 123, 58, 0.5), rgba(41, 93, 45, 0.82));
+		}
+
+		.bonus-tree {
+			position: absolute;
+			width: clamp(34px, 4vw, 46px);
+			height: clamp(72px, 9vw, 98px);
+			pointer-events: none;
+			z-index: 3;
+		}
+
+		.bonus-tree::before {
+			content: "";
+			position: absolute;
+			left: 50%;
+			bottom: 0;
+			transform: translateX(-50%);
+			width: 10px;
+			height: 34%;
+			border-radius: 4px;
+			background: linear-gradient(180deg, #72472c, #4f321f);
+		}
+
+		.bonus-tree::after {
+			content: "";
+			position: absolute;
+			left: 50%;
+			bottom: 24%;
+			transform: translateX(-50%);
+			width: 100%;
+			height: 72%;
+			background: radial-gradient(circle at 34% 30%, #5da25d 0%, #377a3d 70%, #235d2f 100%);
+			clip-path: polygon(50% 0%, 95% 42%, 80% 42%, 100% 72%, 74% 72%, 91% 100%, 9% 100%, 26% 72%, 0% 72%, 20% 42%, 5% 42%);
+			filter: drop-shadow(0 4px 3px rgba(22, 50, 26, 0.18));
 		}
 
 		.animal.distressed {
@@ -705,14 +931,24 @@
 			z-index: 12;
 			background: rgba(255, 255, 255, 0.94);
 			border: 2px solid var(--cw-blue);
-			border-radius: 12px;
-			padding: 0.45rem;
-			min-width: 174px;
+			border-radius: 8px;
+			padding: 0.22rem;
+			width: clamp(62px, 10vw, 84px);
+			min-width: 0;
+		}
+
+		.scene.forest-creek-mode .inventory {
+			top: auto;
+			bottom: 0.6rem;
+			right: 0.6rem;
 		}
 
 		.inventory h3 {
 			margin: 0;
-			font-size: 0.86rem;
+			font-size: 0.56rem;
+			line-height: 1.15;
+			white-space: normal;
+			overflow-wrap: anywhere;
 			color: var(--cw-deep);
 		}
 
@@ -723,11 +959,14 @@
 			background: #f5fbff;
 			color: var(--ink);
 			text-align: left;
-			padding: 0.45rem;
-			border-radius: 9px;
+			padding: 0.2rem;
+			border-radius: 6px;
 			cursor: grab;
 			font-weight: 700;
-			font-size: 0.85rem;
+			font-size: 0.52rem;
+			line-height: 1.15;
+			white-space: normal;
+			overflow-wrap: anywhere;
 		}
 
 		.tool.ready {
@@ -738,6 +977,15 @@
 		.tool[disabled] {
 			opacity: 0.45;
 			cursor: not-allowed;
+		}
+
+		.tool.tree-tool {
+			border-color: #2f7b35;
+			background: #eff9ef;
+		}
+
+		.tool.tree-tool.ready {
+			background: #e4f4e5;
 		}
 
 		.float {
@@ -1046,6 +1294,19 @@
 			to { transform: rotate(360deg) scale(0.9); }
 		}
 
+		@keyframes trash-pop {
+			0% { transform: scale(1); opacity: 0.95; }
+			45% { transform: scale(1.18); opacity: 1; }
+			100% { transform: scale(0.1); opacity: 0; }
+		}
+
+		@keyframes popup-fade {
+			0% { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+			16% { opacity: 1; transform: translateX(-50%) translateY(0); }
+			82% { opacity: 1; transform: translateX(-50%) translateY(0); }
+			100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+		}
+
 		@media (max-width: 900px) {
 			.region-grid { grid-template-columns: 1fr; }
 			.inventory {
@@ -1094,7 +1355,7 @@
 							<li>When filters unlock, drag tools onto polluted spots.</li>
 							<li>Tools have limited charges and cooldowns, so place carefully.</li>
 							<li>Rescue animals once local water health crosses threshold.</li>
-							<li>Reach target quality with healthy wildlife before the timer runs out.</li>
+							<li>After all rescues, plant trees on grass for +10 points each until the timer ends.</li>
 						</ul>
 						<div class="instructions-actions">
 							<button id="startRegionFromInstructions" type="button">Start Region</button>
@@ -1170,6 +1431,9 @@
 				<div class="grass-tuft gt12" aria-hidden="true"><span></span></div>
 					<div class="river" id="river">
 						<div class="flow" id="flow"></div>
+						<div class="rock r1" aria-hidden="true"></div>
+						<div class="rock r2" aria-hidden="true"></div>
+						<div class="rock r3" aria-hidden="true"></div>
 						<div class="pollution p1" data-spot="0"></div>
 						<div class="pollution p2" data-spot="1"></div>
 						<div class="pollution p3" data-spot="2"></div>
@@ -1187,6 +1451,7 @@
 					<h3>Filter Inventory</h3>
 					<button class="tool" data-tool="plant" data-label="🌱 Plant Filter" draggable="true" disabled type="button">🌱 Plant Filter</button>
 					<button class="tool" data-tool="net" data-label="🕸️ Eco Net" draggable="true" disabled type="button">🕸️ Eco Net</button>
+					<button class="tool tree-tool" data-tool="tree" data-label="🌳 Tree Sapling (+10)" draggable="true" disabled type="button">🌳 Tree Sapling (+10)</button>
 				</aside>
 
 				<div class="vegetation" id="vegetation" aria-hidden="true">
@@ -1249,6 +1514,7 @@
 		const tools = Array.from(document.querySelectorAll(".tool"));
 		const pollutionSpots = Array.from(document.querySelectorAll(".pollution"));
 		const animalEls = Array.from(document.querySelectorAll(".animal"));
+		const plantedTrees = [];
 
 		const restartBtn = document.getElementById("restartBtn");
 		const backToMenuBtn = document.getElementById("backToMenuBtn");
@@ -1277,7 +1543,7 @@
 				targetQuality: 78,
 				timeLimit: 120,
 				actionLimit: 90,
-				filterCharges: { plant: 11, net: 7 },
+				filterCharges: { plant: 19, net: 17 },
 				filterCooldownMs: { plant: 900, net: 1400 },
 				appearance: {
 					scene: "linear-gradient(180deg, #98d7ff 0%, #74c4ff 44%, #82d08e 45%, #72bf7d 100%)",
@@ -1308,14 +1574,14 @@
 				targetQuality: 82,
 				timeLimit: 115,
 				actionLimit: 85,
-				filterCharges: { plant: 10, net: 6 },
+				filterCharges: { plant: 18, net: 16 },
 				filterCooldownMs: { plant: 1050, net: 1650 },
 				appearance: {
 					scene: "linear-gradient(180deg, #a5def2 0%, #7ec6da 44%, #5a9e60 45%, #3c7842 100%)",
 					cloud: "linear-gradient(180deg, #768290 0%, #5d6876 55%, #4b5563 100%)",
 					cloudShadow: "rgba(51, 60, 70, 0.9)",
 					riverOffsetTop: "calc(var(--grass-start) + 2%)",
-					riverTranslateY: "0%",
+					riverTranslateY: "15%",
 					mountains: true,
 					vegetation: ["🌱", "🪷", "🌿", "🌾", "🪷"],
 					riverShape: {
@@ -1339,7 +1605,7 @@
 				targetQuality: 86,
 				timeLimit: 110,
 				actionLimit: 82,
-				filterCharges: { plant: 9, net: 6 },
+				filterCharges: { plant: 17, net: 16 },
 				filterCooldownMs: { plant: 1150, net: 1800 },
 				appearance: {
 					scene: "linear-gradient(180deg, #8dc5e8 0%, #5da6cf 44%, #6cae71 45%, #548f5a 100%)",
@@ -1390,7 +1656,8 @@
 			},
 			unlockedTools: {
 				plant: false,
-				net: false
+				net: false,
+				tree: false
 			},
 			filterCharges: {
 				plant: 0,
@@ -1445,9 +1712,23 @@
 			tools.forEach((tool) => {
 				const toolKey = tool.dataset.tool;
 				const baseLabel = tool.dataset.label;
+				const isUnlocked = state.unlockedTools[toolKey];
+
+				if (toolKey === "tree") {
+					if (!isUnlocked || state.gameEnded) {
+						tool.textContent = `${baseLabel} (locked)`;
+						tool.disabled = true;
+						tool.classList.remove("ready");
+						return;
+					}
+					tool.textContent = `${baseLabel} (ready)`;
+					tool.disabled = false;
+					tool.classList.add("ready");
+					return;
+				}
+
 				const chargesLeft = state.filterCharges[toolKey];
 				const cooldownLeft = Math.max(0, state.filterCooldownUntil[toolKey] - now);
-				const isUnlocked = state.unlockedTools[toolKey];
 
 				if (!isUnlocked) {
 					tool.textContent = `${baseLabel} (locked)`;
@@ -1658,6 +1939,7 @@
 
 		function applyFilter(spotEl, toolType) {
 			if (state.phase === "rain" || state.phase === "idle" || state.gameEnded) return;
+			if (toolType === "tree") return;
 			if (!state.unlockedTools[toolType]) {
 				setStatus("That tool is still locked. Keep improving conditions.");
 				return;
@@ -1740,7 +2022,49 @@
 			floatPoints("+35", rect.left - sceneRect.left + 10, rect.top - sceneRect.top, "#1f8f4e");
 			setStatus(`Rescue completed: ${animalLabels[kind]}.`);
 			updateHUD();
+			if (Object.values(state.animalRescued).every(Boolean) && !state.unlockedTools.tree) {
+				state.unlockedTools.tree = true;
+				phaseMsg.textContent = "Phase 4: Reforestation — plant trees on grass for +10 each.";
+				setStatus("All rescues complete! Tree saplings unlocked for bonus points until time runs out.");
+				updateToolButtons();
+			}
 			evaluateEndConditions();
+		}
+
+		function plantBonusTree(clientX, clientY) {
+			if (!state.unlockedTools.tree || state.gameEnded || !state.region) return;
+			const sceneRect = scene.getBoundingClientRect();
+			const x = clientX - sceneRect.left;
+			const y = clientY - sceneRect.top;
+
+			const grassStartVar = getComputedStyle(scene).getPropertyValue("--grass-start").trim();
+			const grassStartPct = Number.parseFloat(grassStartVar) || 46;
+			const grassStartY = sceneRect.height * (grassStartPct / 100);
+			if (y < grassStartY + 4) {
+				setStatus("Plant trees on the grass area.");
+				return;
+			}
+
+			const riverRect = river.getBoundingClientRect();
+			if (clientX >= riverRect.left && clientX <= riverRect.right && clientY >= riverRect.top && clientY <= riverRect.bottom) {
+				setStatus("Trees must be planted on grass, not in water.");
+				return;
+			}
+
+			if (!consumeAction()) return;
+			const tree = document.createElement("span");
+			tree.className = "bonus-tree";
+			const clampedX = Math.max(16, Math.min(sceneRect.width - 46, x - 20));
+			tree.style.left = `${clampedX}px`;
+			tree.style.bottom = `${Math.max(0, sceneRect.height - y - 6)}px`;
+			scene.appendChild(tree);
+			plantedTrees.push(tree);
+
+			state.score += 10;
+			state.bonusPoints += 10;
+			floatPoints("+10 tree", clampedX + 8, y - 24, "#2a9b5f");
+			setStatus("Tree planted! +10 bonus points.");
+			updateHUD();
 		}
 
 		function countHealthyAnimals() {
@@ -1750,10 +2074,7 @@
 
 		function evaluateEndConditions() {
 			if (state.gameEnded || !state.region) return;
-			const allHealthy = countHealthyAnimals() === 4;
-			if (state.quality >= state.region.targetQuality && allHealthy) {
-				endRegion(true, "River restored");
-			}
+			return;
 		}
 
 		function buildResults(win, reason) {
@@ -1791,7 +2112,9 @@
 				state.timeLeft -= 1;
 				updateHUD();
 				if (state.timeLeft <= 0) {
-					endRegion(false, "Time limit reached");
+					const allHealthy = countHealthyAnimals() === 4;
+					const win = state.quality >= state.region.targetQuality && allHealthy;
+					endRegion(win, win ? "River restored" : "Time limit reached");
 				}
 			}, 1000);
 		}
@@ -1810,6 +2133,7 @@
 			state.pollutionLevels = [100, 100, 100, 100];
 			state.animalHealth = { fish: 0, otter: 0, frog: 0, bird: 0 };
 			state.unlockedTools = { plant: false, net: false };
+			state.unlockedTools.tree = false;
 			state.filterCharges = {
 				plant: state.region.filterCharges.plant,
 				net: state.region.filterCharges.net
@@ -1817,6 +2141,10 @@
 			state.filterCooldownUntil = { plant: 0, net: 0 };
 			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
 			state.phase = "rain";
+			while (plantedTrees.length) {
+				const planted = plantedTrees.pop();
+				planted.remove();
+			}
 
 			tools.forEach((tool) => { tool.disabled = true; });
 			pollutionSpots.forEach((spot) => {
@@ -1847,6 +2175,7 @@
 			scene.style.background = theme.scene;
 			scene.classList.toggle("river-bank-mode", state.regionKey === "riverBank");
 			scene.classList.toggle("wetland-mode", state.regionKey === "wetlandValley");
+			scene.classList.toggle("forest-creek-mode", state.regionKey === "forestCreek");
 			mountains.style.display = theme.mountains ? "block" : "none";
 			houses.style.display = state.regionKey === "riverBank" ? "block" : "none";
 			riverWrap.style.top = theme.riverOffsetTop || "calc(var(--grass-start) + 2%)";
@@ -1889,6 +2218,10 @@
 			endOverlay.style.display = "none";
 			instructionsOverlay.style.display = "none";
 			scene.classList.remove("thriving");
+			while (plantedTrees.length) {
+				const planted = plantedTrees.pop();
+				planted.remove();
+			}
 			menuScreen.classList.remove("hidden");
 			gameScreen.classList.add("hidden");
 		}
@@ -1995,9 +2328,29 @@
 				event.preventDefault();
 				const toolType = event.dataTransfer.getData("text/plain") || state.dragTool;
 				if (!toolType) return;
+				if (toolType === "tree") {
+					setStatus("Drop tree saplings on grass areas.");
+					return;
+				}
 				applyFilter(spot, toolType);
 				evaluateEndConditions();
 			});
+		});
+
+		scene.addEventListener("dragover", (event) => {
+			if (state.gameEnded) return;
+			const toolType = event.dataTransfer?.types?.includes("text/plain") ? (event.dataTransfer.getData("text/plain") || state.dragTool) : state.dragTool;
+			if (toolType === "tree" && state.unlockedTools.tree) {
+				event.preventDefault();
+			}
+		});
+
+		scene.addEventListener("drop", (event) => {
+			if (state.gameEnded) return;
+			const toolType = event.dataTransfer.getData("text/plain") || state.dragTool;
+			if (toolType !== "tree") return;
+			event.preventDefault();
+			plantBonusTree(event.clientX, event.clientY);
 		});
 
 		animalEls.forEach((animal) => {
