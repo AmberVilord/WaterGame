@@ -2187,6 +2187,7 @@
 				label: "Medium",
 				initialTrashFiltersRequired: 4,
 				timeMultiplier: 1,
+				timeOffset: -30,
 				actionMultiplier: 1,
 				targetQualityDelta: 0,
 				rainUnlockDelta: 0,
@@ -2494,10 +2495,8 @@
 					return;
 				}
 				const debrisAmount = 12 * amountMultiplier;
-				// Mark spot as needing at least 1 filter before it can be cleared.
-				state.surgeSpotPending[index] = true;
 				if (state.initialTrashCleared) {
-					// Post-initial trash is capped so two filter uses can clear it.
+					// Post-initial trash should always clear in one filter use.
 					state.pollutionLevels[index] = Math.min(36, state.pollutionLevels[index] + debrisAmount);
 				} else {
 					state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + debrisAmount);
@@ -2966,10 +2965,6 @@
 					initialHitsRequired,
 					state.initialTrashFilterHits[index] + hitVal
 				);
-			}
-			// Clear surge pending flag when the player filters any surge spot.
-			if (state.initialTrashCleared && index < 4 && state.surgeSpotPending[index]) {
-				state.surgeSpotPending[index] = false;
 			}
 			const before = state.pollutionLevels[index];
 			if (before <= 0) return;
