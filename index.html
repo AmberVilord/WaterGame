@@ -1195,6 +1195,39 @@
 			bottom: 0.6rem;
 			left: 0.6rem;
 			right: auto;
+			width: clamp(220px, 28vw, 286px);
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.3rem;
+			align-items: start;
+		}
+
+		.scene.forest-creek-mode .inventory h3 {
+			grid-column: 1 / -1;
+		}
+
+		.scene.forest-creek-mode .inventory .tool {
+			margin-top: 0;
+		}
+
+		.scene.forest-creek-mode .inventory [data-tool="plant"] {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		.scene.forest-creek-mode .inventory [data-tool="net"] {
+			grid-column: 1;
+			grid-row: 3;
+		}
+
+		.scene.forest-creek-mode .inventory [data-tool="tree"] {
+			grid-column: 2;
+			grid-row: 2;
+		}
+
+		.scene.forest-creek-mode .inventory [data-tool="boom"] {
+			grid-column: 2;
+			grid-row: 3;
 		}
 
 		.inventory h3 {
