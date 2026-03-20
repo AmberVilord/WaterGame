@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>River Guardians</title>
 	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@600;700;800&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
 
 		:root {
 			--cw-yellow: #ffc907;
@@ -28,7 +28,7 @@
 		body {
 			margin: 0;
 			height: 100dvh;
-			font-family: "Libre Baskerville", "Baskervville", "Playfair Display", serif;
+			font-family: "Montserrat", "Avenir Next", "Segoe UI", sans-serif;
 			background-image: url("https://images.unsplash.com/photo-1508624217470-5ef0f947d8be?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 			background-size: cover;
 			background-position: center;
@@ -54,7 +54,8 @@
 		}
 
 		.menu {
-			height: 100%;
+			flex: 1 1 auto;
+			height: auto;
 			display: grid;
 			place-items: center;
 			padding: 1.2rem;
@@ -62,7 +63,8 @@
 		}
 
 		#gameScreen {
-			height: 100%;
+			flex: 1 1 auto;
+			height: auto;
 			display: flex;
 			flex-direction: column;
 			min-height: 0;
@@ -110,6 +112,17 @@
 			margin: 0.45rem 0 0;
 			font-weight: 700;
 			color: #2c4f63;
+		}
+
+		.instructions-objective {
+			margin: 0.55rem 0 0;
+			padding: 0.45rem 0.55rem;
+			border-radius: 9px;
+			background: #eef8ff;
+			border: 1px solid #b8ddf4;
+			font-size: 0.84rem;
+			font-weight: 700;
+			color: #1e4c68;
 		}
 
 		.instructions-list {
@@ -162,7 +175,8 @@
 			margin: 0;
 			font-size: clamp(1.6rem, 4vw, 2.6rem);
 			color: var(--cw-deep);
-			font-family: "Playfair Display", "Libre Baskerville", serif;
+			font-family: "Montserrat", "Avenir Next", sans-serif;
+			letter-spacing: 0.02em;
 		}
 
 		.subtitle {
@@ -196,10 +210,63 @@
 			outline: none;
 		}
 
+		.region-btn.active {
+			background: #caebff;
+			border-color: #2e9df7;
+			box-shadow: 0 0 0 3px rgba(46, 157, 247, 0.2);
+		}
+
 		.hint {
 			margin-top: 0.7rem;
 			font-weight: 600;
 			color: #3c6178;
+		}
+
+		.difficulty-panel {
+			margin-top: 0.8rem;
+			padding: 0.65rem;
+			border: 2px solid #b8ddf4;
+			border-radius: 12px;
+			background: #f4fbff;
+		}
+
+		.difficulty-title {
+			margin: 0;
+			font-size: 0.92rem;
+			font-weight: 800;
+			color: #1e4c68;
+		}
+
+		.difficulty-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.55rem;
+			margin-top: 0.55rem;
+		}
+
+		.difficulty-btn {
+			border: 2px solid #6eaed4;
+			background: #fff;
+			border-radius: 10px;
+			padding: 0.5rem;
+			font-weight: 800;
+			color: #16435d;
+			cursor: pointer;
+			min-height: 58px;
+		}
+
+		.difficulty-btn small {
+			display: block;
+			font-size: 0.72rem;
+			font-weight: 700;
+			color: #3d677f;
+			margin-top: 0.15rem;
+		}
+
+		.difficulty-btn.active {
+			background: #caebff;
+			border-color: #2e9df7;
+			box-shadow: 0 0 0 3px rgba(46, 157, 247, 0.2);
 		}
 
 		.hidden { display: none !important; }
@@ -224,7 +291,36 @@
 		.top-title {
 			font-weight: 900;
 			color: #1d2d3a;
-			font-family: "Playfair Display", "Libre Baskerville", serif;
+			font-family: "Montserrat", "Avenir Next", sans-serif;
+			letter-spacing: 0.02em;
+		}
+
+		.cw-footer {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.6rem;
+			padding: 0.55rem 0.8rem;
+			background: #08304b;
+			border-top: 3px solid var(--cw-yellow);
+			font-size: 0.83rem;
+			font-weight: 700;
+			color: #dff3ff;
+			flex-wrap: wrap;
+		}
+
+		.cw-footer a {
+			color: #ffffff;
+			text-decoration: none;
+			font-weight: 800;
+			padding: 0.12rem 0.25rem;
+			border-radius: 6px;
+		}
+
+		.cw-footer a:hover,
+		.cw-footer a:focus-visible {
+			background: rgba(255, 201, 7, 0.2);
+			outline: none;
 		}
 
 		.brand-chip {
@@ -1549,6 +1645,7 @@
 
 		@media (max-width: 900px) {
 			.region-grid { grid-template-columns: 1fr; }
+			.difficulty-grid { grid-template-columns: 1fr; }
 			.topbar {
 				grid-template-columns: 1fr;
 				padding: 0.6rem;
@@ -1668,6 +1765,11 @@
 				width: 100%;
 			}
 			.results-grid { grid-template-columns: 1fr; }
+			.cw-footer {
+				font-size: 0.76rem;
+				padding: 0.5rem 0.45rem;
+				gap: 0.4rem;
+			}
 		}
 	</style>
 </head>
@@ -1685,13 +1787,23 @@
 					<button class="region-btn" data-region="wetlandValley" type="button">Wetland Valley</button>
 					<button class="region-btn" data-region="forestCreek" type="button">Forest Creek</button>
 				</div>
-				<p class="hint">Choose a region to activate gameplay and UI.</p>
+				<p class="hint" id="menuHint">Choose a region first, then choose difficulty.</p>
+				<div class="difficulty-panel" aria-label="Difficulty selection">
+					<p class="difficulty-title">Difficulty Mode</p>
+					<div class="difficulty-grid" id="difficultyGrid">
+						<button class="difficulty-btn" data-difficulty="easy" type="button">Easy<small>More time and forgiving goals</small></button>
+						<button class="difficulty-btn active" data-difficulty="normal" type="button">Normal<small>Balanced rules</small></button>
+						<button class="difficulty-btn" data-difficulty="hard" type="button">Hard<small>Tight timer and tougher win goals</small></button>
+					</div>
+				</div>
 
 				<div class="instructions-overlay" id="instructionsOverlay" aria-live="polite">
 					<div class="instructions-card">
 						<button class="close-instructions" id="closeInstructionsBtn" type="button" aria-label="Close instructions">×</button>
 						<h2>Region Instructions</h2>
 						<p id="instructionsRegionLabel">Selected Region</p>
+						<p id="instructionsDifficultyLabel">Difficulty: Normal</p>
+						<p id="instructionsObjectiveLabel" class="instructions-objective">Select a region and difficulty to preview goals.</p>
 						<ul class="instructions-list">
 							<li>Tap/drag cloud to direct rain and raise water quality.</li>
 							<li>When filters unlock, drag tools onto polluted spots.</li>
@@ -1700,7 +1812,7 @@
 							<li>After all rescues, plant trees on grass for +10 points each until the timer ends.</li>
 						</ul>
 						<div class="instructions-actions">
-							<button id="startRegionFromInstructions" type="button">Start Region</button>
+							<button id="startRegionFromInstructions" type="button">Play Now</button>
 						</div>
 					</div>
 				</div>
@@ -1712,6 +1824,7 @@
 				<div class="title-metrics">
 					<div class="top-title" id="regionTitle">River Guardians</div>
 					<div class="hud" id="hud">
+						<div class="pill" id="difficultyPill">Difficulty: Normal</div>
 						<div class="pill" id="scorePill">Score: 0</div>
 						<div class="pill" id="qualityPill">Quality: 0%</div>
 						<div class="pill" id="waterPill">Water: 0%</div>
@@ -1840,6 +1953,12 @@
 				</div>
 			</div>
 		</section>
+		<footer class="cw-footer" aria-label="charity water links">
+			<span>Support the mission:</span>
+			<a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">charity: water</a>
+			<span>•</span>
+			<a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate</a>
+		</footer>
 	</main>
 
 	<script>
@@ -1849,9 +1968,15 @@
 		const instructionsOverlay = document.getElementById("instructionsOverlay");
 		const closeInstructionsBtn = document.getElementById("closeInstructionsBtn");
 		const instructionsRegionLabel = document.getElementById("instructionsRegionLabel");
+		const instructionsDifficultyLabel = document.getElementById("instructionsDifficultyLabel");
+		const instructionsObjectiveLabel = document.getElementById("instructionsObjectiveLabel");
 		const startRegionFromInstructions = document.getElementById("startRegionFromInstructions");
+		const difficultyButtons = Array.from(document.querySelectorAll(".difficulty-btn"));
+		const regionButtons = Array.from(document.querySelectorAll(".region-btn"));
+		const menuHint = document.getElementById("menuHint");
 
 		const regionTitle = document.getElementById("regionTitle");
+		const difficultyPill = document.getElementById("difficultyPill");
 		const scorePill = document.getElementById("scorePill");
 		const qualityPill = document.getElementById("qualityPill");
 		const waterPill = document.getElementById("waterPill");
@@ -2013,16 +2138,71 @@
 			}
 		};
 
+		const difficulties = {
+			easy: {
+				label: "Easy",
+				timeMultiplier: 1.2,
+				actionMultiplier: 1.12,
+				targetQualityDelta: -10,
+				rainUnlockDelta: -5,
+				animalUnlockDelta: -8,
+				rainImpactMultiplier: 1.1,
+				filterChargeDelta: 3,
+				cooldownMultiplier: 0.85,
+				requiredRescues: 3,
+				minHealthyAnimals: 3,
+				requiredTreeBonus: 0
+			},
+			normal: {
+				label: "Normal",
+				timeMultiplier: 1,
+				actionMultiplier: 1,
+				targetQualityDelta: 0,
+				rainUnlockDelta: 0,
+				animalUnlockDelta: 0,
+				rainImpactMultiplier: 1,
+				filterChargeDelta: 0,
+				cooldownMultiplier: 1,
+				requiredRescues: 4,
+				minHealthyAnimals: 4,
+				requiredTreeBonus: 0
+			},
+			hard: {
+				label: "Hard",
+				timeMultiplier: 0.8,
+				actionMultiplier: 0.88,
+				targetQualityDelta: 8,
+				rainUnlockDelta: 4,
+				animalUnlockDelta: 6,
+				rainImpactMultiplier: 0.92,
+				filterChargeDelta: -4,
+				cooldownMultiplier: 1.25,
+				requiredRescues: 4,
+				minHealthyAnimals: 4,
+				requiredTreeBonus: 20
+			}
+		};
+
 		const toolsConfig = {
 			plant: { cleanup: 18, score: 14, tone: 620 },
 			net: { cleanup: 54, score: 22, tone: 760 }
 		};
 
+		const scoreMilestones = [
+			{ score: 50, message: "Milestone reached: 50 points. Nice momentum!" },
+			{ score: 120, message: "Milestone reached: 120 points. Keep restoring the river!" },
+			{ score: 200, message: "Milestone reached: 200 points. Wildlife recovery is strong!" },
+			{ score: 300, message: "Milestone reached: 300 points. Excellent stewardship!" }
+		];
+
 		const state = {
+			difficultyKey: "normal",
+			difficulty: difficulties.normal,
 			regionKey: null,
 			region: null,
 			score: 0,
 			bonusPoints: 0,
+			treeBonusPoints: 0,
 			rain: 0,
 			waterLevel: 0,
 			quality: 0,
@@ -2065,9 +2245,54 @@
 			allTrashPromptShown: false,
 			twistIntervalId: null,
 			lastDebrisSurgeAt: 0,
+			musicIntervalId: null,
+			celebrationMusicPlaying: false,
+			milestonesShown: [],
 			highScores: [],
 			pendingHighScoreValue: null
 		};
+
+		function buildRegionWithDifficulty(regionKey, difficultyKey) {
+			const base = regions[regionKey];
+			const mode = difficulties[difficultyKey] || difficulties.normal;
+			const plantCharges = Math.max(6, base.filterCharges.plant + mode.filterChargeDelta);
+			const netCharges = Math.max(5, base.filterCharges.net + mode.filterChargeDelta);
+			const targetQuality = Math.max(55, Math.min(98, base.targetQuality + mode.targetQualityDelta));
+			return {
+				...base,
+				difficultyKey,
+				difficultyLabel: mode.label,
+				timeLimit: Math.max(45, Math.round(base.timeLimit * mode.timeMultiplier)),
+				actionLimit: Math.max(45, Math.round(base.actionLimit * mode.actionMultiplier)),
+				targetQuality,
+				rainUnlock: Math.max(8, base.rainUnlock + mode.rainUnlockDelta),
+				animalUnlock: Math.max(30, base.animalUnlock + mode.animalUnlockDelta),
+				rainImpact: Number((base.rainImpact * mode.rainImpactMultiplier).toFixed(2)),
+				filterCharges: {
+					plant: plantCharges,
+					net: netCharges
+				},
+				filterCooldownMs: {
+					plant: Math.round(base.filterCooldownMs.plant * mode.cooldownMultiplier),
+					net: Math.round(base.filterCooldownMs.net * mode.cooldownMultiplier)
+				},
+				winRequirements: {
+					requiredRescues: mode.requiredRescues,
+					minHealthyAnimals: mode.minHealthyAnimals,
+					requiredTreeBonus: mode.requiredTreeBonus
+				}
+			};
+		}
+
+		function setDifficulty(difficultyKey) {
+			if (!difficulties[difficultyKey]) return;
+			state.difficultyKey = difficultyKey;
+			state.difficulty = difficulties[difficultyKey];
+			difficultyButtons.forEach((button) => {
+				button.classList.toggle("active", button.dataset.difficulty === difficultyKey);
+			});
+			difficultyPill.textContent = `Difficulty: ${state.difficulty.label}`;
+		}
 
 		function loadHighScores() {
 			try {
@@ -2080,7 +2305,8 @@
 					.map((entry) => ({
 						name: entry.name.trim().slice(0, 20) || "Player",
 						score: Math.max(0, Math.round(entry.score)),
-						region: typeof entry.region === "string" ? entry.region : "Unknown Region"
+						region: typeof entry.region === "string" ? entry.region : "Unknown Region",
+						difficulty: typeof entry.difficulty === "string" ? entry.difficulty : "Normal"
 					}))
 					.sort((a, b) => b.score - a.score)
 					.slice(0, HIGH_SCORE_LIMIT);
@@ -2102,7 +2328,7 @@
 			highScoreEmpty.style.display = "none";
 			state.highScores.forEach((entry, index) => {
 				const item = document.createElement("li");
-				item.textContent = `#${index + 1} ${entry.name} — ${entry.score} (${entry.region})`;
+				item.textContent = `#${index + 1} ${entry.name} — ${entry.score} (${entry.region}, ${entry.difficulty})`;
 				highScoreList.appendChild(item);
 			});
 		}
@@ -2135,7 +2361,8 @@
 			state.highScores.push({
 				name,
 				score: state.pendingHighScoreValue,
-				region: state.region ? state.region.name : "Unknown Region"
+				region: state.region ? state.region.name : "Unknown Region",
+				difficulty: state.region ? state.region.difficultyLabel : "Normal"
 			});
 			state.highScores = state.highScores
 				.sort((a, b) => b.score - a.score)
@@ -2208,6 +2435,7 @@
 			const animalAvg = Math.round(
 				(state.animalHealth.fish + state.animalHealth.otter + state.animalHealth.frog + state.animalHealth.bird) / 4
 			);
+			const requiredRescues = state.region?.winRequirements?.requiredRescues ?? 4;
 			scorePill.textContent = `Score: ${state.score}`;
 			qualityPill.textContent = `Quality: ${Math.round(state.quality)}%`;
 			waterPill.textContent = `Water: ${Math.round(state.waterLevel)}%`;
@@ -2215,11 +2443,29 @@
 			pollutionPill.textContent = `Pollution: ${pollutionAvg}%`;
 			animalHealthPill.textContent = `Animal Health: ${animalAvg}%`;
 			timePill.textContent = `Time: ${Math.max(0, state.timeLeft)}s`;
-			targetPill.textContent = `Target: ${state.region ? state.region.targetQuality : 0}%`;
+			targetPill.textContent = `Target: ${state.region ? state.region.targetQuality : 0}% • Rescue ${requiredRescues}`;
+			difficultyPill.textContent = `Difficulty: ${state.difficulty.label}`;
+			checkScoreMilestones();
+		}
+
+		function checkScoreMilestones() {
+			if (!state.region || state.gameEnded) return;
+			scoreMilestones.forEach((milestone) => {
+				if (state.score >= milestone.score && !state.milestonesShown.includes(milestone.score)) {
+					state.milestonesShown.push(milestone.score);
+					showScenePopup(milestone.message);
+					setStatus(milestone.message);
+					cleanSound(700 + Math.min(260, milestone.score));
+				}
+			});
 		}
 
 		function consumeAction() {
 			if (state.gameEnded || !state.region) return false;
+			if (state.actionsUsed >= state.region.actionLimit) {
+				setStatus("Action budget reached. Wait for timer end to lock final result.");
+				return false;
+			}
 			state.actionsUsed += 1;
 			updateHUD();
 			return true;
@@ -2326,6 +2572,9 @@
 				if (!Ctx) return;
 				audioCtx = new Ctx();
 			}
+			if (audioCtx.state === "suspended") {
+				audioCtx.resume();
+			}
 			const osc = audioCtx.createOscillator();
 			const gain = audioCtx.createGain();
 			osc.type = type;
@@ -2340,6 +2589,44 @@
 
 		function rainSound() { tone(420, 0.06, "triangle"); }
 		function cleanSound(freq = 700) { tone(freq, 0.09, "sine"); }
+		function filterAttemptSound() {
+			tone(570, 0.045, "triangle");
+		}
+		function trashPopSound() {
+			tone(980, 0.05, "square");
+			setTimeout(() => tone(760, 0.05, "triangle"), 40);
+		}
+		function stopCelebrationMusic() {
+			if (state.musicIntervalId) {
+				clearInterval(state.musicIntervalId);
+				state.musicIntervalId = null;
+			}
+			state.celebrationMusicPlaying = false;
+		}
+		function playCelebrationMusic() {
+			if (state.celebrationMusicPlaying || state.gameEnded) return;
+			state.celebrationMusicPlaying = true;
+			const melody = [523, 659, 784, 659, 880, 988, 784, 659];
+			let step = 0;
+			state.musicIntervalId = setInterval(() => {
+				if (!state.celebrationMusicPlaying || state.gameEnded) return;
+				const note = melody[step % melody.length];
+				tone(note, 0.18, "sine");
+				if (step % 2 === 0) {
+					tone(Math.max(220, note / 2), 0.14, "triangle");
+				}
+				step += 1;
+			}, 260);
+			showScenePopup("All animals saved and trash cleared! 🎵");
+		}
+		function maybeStartCelebrationMusic() {
+			if (!state.region || state.gameEnded) return;
+			const allAnimalsSaved = Object.values(state.animalRescued).every(Boolean);
+			const allTrashFiltered = state.pollutionLevels.every((level) => level <= 0.01);
+			if (allAnimalsSaved && allTrashFiltered) {
+				playCelebrationMusic();
+			}
+		}
 		function animalSound(kind) {
 			if (kind === "frog") tone(260, 0.12, "square");
 			else if (kind === "bird") tone(220, 0.11, "square");
@@ -2491,6 +2778,7 @@
 		function applyFilter(spotEl, toolType) {
 			if (state.phase === "rain" || state.phase === "idle" || state.gameEnded) return;
 			if (toolType === "tree") return;
+			filterAttemptSound();
 			if (!state.unlockedTools[toolType]) {
 				setStatus("That tool is still locked. Keep improving conditions.");
 				return;
@@ -2533,6 +2821,7 @@
 				if (!poppedFinal && state.pollutionLevels[index] <= 0.01) {
 					state.pollutionLevels[index] = 0;
 					poppedFinal = true;
+					trashPopSound();
 					spotEl.classList.add("pop-out");
 					setTimeout(() => {
 						spotEl.classList.remove("active", "pop-out");
@@ -2544,6 +2833,7 @@
 					showScenePopup("Hurry and rescue the animals!");
 					setStatus("Hurry and rescue the animals!");
 				}
+				maybeStartCelebrationMusic();
 				if (tick >= steps) {
 					clearInterval(interval);
 					spotEl.classList.remove("cleaning");
@@ -2587,12 +2877,18 @@
 			floatPoints("+35", rect.left - sceneRect.left + 10, rect.top - sceneRect.top, "#1f8f4e");
 			setStatus(`Rescue completed: ${animalLabels[kind]}.`);
 			updateHUD();
-			if (Object.values(state.animalRescued).every(Boolean) && !state.unlockedTools.tree) {
+			const rescuedCount = Object.values(state.animalRescued).filter(Boolean).length;
+			if (rescuedCount >= state.region.winRequirements.requiredRescues && !state.unlockedTools.tree) {
 				state.unlockedTools.tree = true;
 				phaseMsg.textContent = "Phase 4: Reforestation — plant trees on grass for +10 each.";
-				setStatus("All rescues complete! Tree saplings unlocked for bonus points until time runs out.");
+				if (state.region.winRequirements.requiredTreeBonus > 0) {
+					setStatus(`Rescue goal complete! Plant trees to reach +${state.region.winRequirements.requiredTreeBonus} tree bonus for victory.`);
+				} else {
+					setStatus("Rescue goal complete! Tree saplings unlocked for bonus points until time runs out.");
+				}
 				updateToolButtons();
 			}
+			maybeStartCelebrationMusic();
 			evaluateEndConditions();
 		}
 
@@ -2627,9 +2923,11 @@
 
 			state.score += 10;
 			state.bonusPoints += 10;
+			state.treeBonusPoints += 10;
 			floatPoints("+10 tree", clampedX + 8, y - 24, "#2a9b5f");
 			setStatus("Tree planted! +10 bonus points.");
 			updateHUD();
+			evaluateEndConditions();
 		}
 
 		function countHealthyAnimals() {
@@ -2639,6 +2937,18 @@
 
 		function evaluateEndConditions() {
 			if (state.gameEnded || !state.region) return;
+			if (state.timeLeft <= 0) return;
+			const rescuedCount = Object.values(state.animalRescued).filter(Boolean).length;
+			const healthyCount = countHealthyAnimals();
+			const winRequirements = state.region.winRequirements;
+			const hasWon =
+				state.quality >= state.region.targetQuality &&
+				rescuedCount >= winRequirements.requiredRescues &&
+				healthyCount >= winRequirements.minHealthyAnimals &&
+				state.treeBonusPoints >= winRequirements.requiredTreeBonus;
+			if (hasWon) {
+				setStatus("All goals met! Hold conditions until timer ends for final result.");
+			}
 			return;
 		}
 
@@ -2657,6 +2967,9 @@
 		function endRegion(win, reason) {
 			if (state.gameEnded) return;
 			state.gameEnded = true;
+			if (!win) {
+				stopCelebrationMusic();
+			}
 			clearInterval(state.timerId);
 			state.timerId = null;
 			stopTwists();
@@ -2688,8 +3001,21 @@
 				state.timeLeft -= 1;
 				updateHUD();
 				if (state.timeLeft <= 0) {
-					const allHealthy = countHealthyAnimals() === 4;
-					const win = state.quality >= state.region.targetQuality && allHealthy;
+					const rescuedCount = Object.values(state.animalRescued).filter(Boolean).length;
+					const healthyCount = countHealthyAnimals();
+					const winRequirements = state.region.winRequirements;
+					const win =
+						state.quality >= state.region.targetQuality &&
+						rescuedCount >= winRequirements.requiredRescues &&
+						healthyCount >= winRequirements.minHealthyAnimals &&
+						state.treeBonusPoints >= winRequirements.requiredTreeBonus;
+					if (win) {
+						const timeBonus = Math.max(0, state.timeLeft * 2);
+						if (timeBonus > 0) {
+							state.score += timeBonus;
+							state.bonusPoints += timeBonus;
+						}
+					}
 					endRegion(win, win ? "River restored" : "Time limit reached");
 				}
 			}, 1000);
@@ -2698,8 +3024,10 @@
 		function resetRegionState() {
 			clearInterval(state.timerId);
 			state.timerId = null;
+			stopCelebrationMusic();
 			state.score = 0;
 			state.bonusPoints = 0;
+			state.treeBonusPoints = 0;
 			state.rain = 0;
 			state.waterLevel = 0;
 			state.quality = 0;
@@ -2708,8 +3036,7 @@
 			state.gameEnded = false;
 			state.pollutionLevels = [100, 100, 100, 100];
 			state.animalHealth = { fish: 0, otter: 0, frog: 0, bird: 0 };
-			state.unlockedTools = { plant: false, net: false };
-			state.unlockedTools.tree = false;
+			state.unlockedTools = { plant: false, net: false, tree: false };
 			state.filterCharges = {
 				plant: state.region.filterCharges.plant,
 				net: state.region.filterCharges.net
@@ -2719,6 +3046,7 @@
 			state.phase = "rain";
 			state.allTrashPromptShown = false;
 			state.lastDebrisSurgeAt = 0;
+			state.milestonesShown = [];
 			while (plantedTrees.length) {
 				const planted = plantedTrees.pop();
 				planted.remove();
@@ -2746,7 +3074,7 @@
 			highScoreEntry.style.display = "none";
 
 			phaseMsg.textContent = "Phase 1: Tap or drag cloud to build rainfall.";
-			setStatus("Rain first. Filters and wildlife unlock as quality rises.");
+			setStatus(`${state.region.difficultyLabel} mode active. Rain first; later phases unlock as quality rises.`);
 			updateToolButtons();
 			recalcQuality();
 			startTwists();
@@ -2786,8 +3114,8 @@
 
 		function startRegion(regionKey) {
 			state.regionKey = regionKey;
-			state.region = regions[regionKey];
-			regionTitle.textContent = `River Guardians • ${state.region.name}`;
+			state.region = buildRegionWithDifficulty(regionKey, state.difficultyKey);
+			regionTitle.textContent = `River Guardians • ${state.region.name} (${state.region.difficultyLabel})`;
 			applyRegionAppearance();
 			menuScreen.classList.add("hidden");
 			gameScreen.classList.remove("hidden");
@@ -2804,6 +3132,7 @@
 		function goToMenu() {
 			clearInterval(state.timerId);
 			state.timerId = null;
+			stopCelebrationMusic();
 			stopTwists();
 			state.phase = "idle";
 			state.region = null;
@@ -2819,6 +3148,8 @@
 				const planted = plantedTrees.pop();
 				planted.remove();
 			}
+			updateRegionSelectionButtons();
+			setMenuHint("Choose a region first, then choose difficulty.");
 			menuScreen.classList.remove("hidden");
 			gameScreen.classList.add("hidden");
 		}
@@ -2827,13 +3158,28 @@
 			const button = event.target.closest(".region-btn");
 			if (!button) return;
 			state.pendingRegion = button.dataset.region;
-			instructionsRegionLabel.textContent = `Region: ${regions[state.pendingRegion].name}`;
-			instructionsOverlay.style.display = "flex";
+			updateRegionSelectionButtons();
+			instructionsOverlay.style.display = "none";
+			setMenuHint(`Region selected: ${regions[state.pendingRegion].name}. Now choose difficulty.`);
+		});
+
+		difficultyButtons.forEach((button) => {
+			button.addEventListener("click", () => {
+				if (!state.pendingRegion) {
+					setMenuHint("Choose a region first, then choose difficulty.");
+					return;
+				}
+				setDifficulty(button.dataset.difficulty);
+				setMenuHint(`Difficulty selected: ${state.difficulty.label}. Review rules, then press Play Now.`);
+				showInstructionsForSelection();
+			});
 		});
 
 		closeInstructionsBtn.addEventListener("click", () => {
 			instructionsOverlay.style.display = "none";
-			state.pendingRegion = null;
+			if (state.pendingRegion) {
+				setMenuHint(`Region selected: ${regions[state.pendingRegion].name}. Choose or change difficulty.`);
+			}
 		});
 
 		startRegionFromInstructions.addEventListener("click", () => {
@@ -2847,7 +3193,9 @@
 		instructionsOverlay.addEventListener("click", (event) => {
 			if (event.target === instructionsOverlay) {
 				instructionsOverlay.style.display = "none";
-				state.pendingRegion = null;
+				if (state.pendingRegion) {
+					setMenuHint(`Region selected: ${regions[state.pendingRegion].name}. Choose or change difficulty.`);
+				}
 			}
 		});
 
@@ -2961,6 +3309,7 @@
 
 		state.highScores = loadHighScores();
 		renderHighScores();
+		setDifficulty(state.difficultyKey);
 		goToMenu();
 	</script>
 </body>
