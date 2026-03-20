@@ -1224,6 +1224,15 @@
 			background: #e4f4e5;
 		}
 
+		.tool.boom-tool {
+			border-color: #a76b00;
+			background: #fff8df;
+		}
+
+		.tool.boom-tool.ready {
+			background: #ffeeb8;
+		}
+
 		.float {
 			position: absolute;
 			z-index: 30;
@@ -1915,6 +1924,7 @@
 					<button class="tool" data-tool="plant" data-label="🌱 Plant Filter" draggable="true" disabled type="button">🌱 Plant Filter</button>
 					<button class="tool" data-tool="net" data-label="🕸️ Eco Net" draggable="true" disabled type="button">🕸️ Eco Net</button>
 					<button class="tool tree-tool" data-tool="tree" data-label="🌳 Tree Sapling (+10)" draggable="true" disabled type="button">🌳 Tree Sapling (+10)</button>
+					<button class="tool boom-tool" data-tool="boom" data-label="🛡️ Trash Boom (Buy 25)" disabled type="button">🛡️ Trash Boom (Buy 25)</button>
 				</aside>
 
 				<div class="vegetation" id="vegetation" aria-hidden="true">
@@ -2220,7 +2230,8 @@
 			unlockedTools: {
 				plant: false,
 				net: false,
-				tree: false
+				tree: false,
+				boom: false
 			},
 			filterCharges: {
 				plant: 0,
@@ -2243,10 +2254,13 @@
 			lastDragRainAt: 0,
 			pendingRegion: null,
 			allTrashPromptShown: false,
+			initialTrashCleared: false,
 			twistIntervalId: null,
 			lastDebrisSurgeAt: 0,
 			musicIntervalId: null,
 			celebrationMusicPlaying: false,
+			boomActive: false,
+			blockedTrashCount: 0,
 			milestonesShown: [],
 			highScores: [],
 			pendingHighScoreValue: null
@@ -2292,6 +2306,28 @@
 				button.classList.toggle("active", button.dataset.difficulty === difficultyKey);
 			});
 			difficultyPill.textContent = `Difficulty: ${state.difficulty.label}`;
+		}
+
+		function setMenuHint(text) {
+			if (!menuHint) return;
+			menuHint.textContent = text;
+		}
+
+		function updateRegionSelectionButtons() {
+			regionButtons.forEach((button) => {
+				button.classList.toggle("active", button.dataset.region === state.pendingRegion);
+			});
+		}
+
+		function showInstructionsForSelection() {
+			if (!state.pendingRegion) return;
+			const selectedSetup = buildRegionWithDifficulty(state.pendingRegion, state.difficultyKey);
+			instructionsRegionLabel.textContent = `Region: ${selectedSetup.name}`;
+			instructionsDifficultyLabel.textContent = `Difficulty: ${selectedSetup.difficultyLabel}`;
+			if (instructionsObjectiveLabel) {
+				instructionsObjectiveLabel.textContent = `Win goals: ${selectedSetup.targetQuality}% quality, ${selectedSetup.winRequirements.requiredRescues} rescues, ${selectedSetup.winRequirements.minHealthyAnimals} healthy animals, ${selectedSetup.winRequirements.requiredTreeBonus} tree-bonus points. Time: ${selectedSetup.timeLimit}s. Actions: ${selectedSetup.actionLimit}.`;
+			}
+			instructionsOverlay.style.display = "flex";
 		}
 
 		function loadHighScores() {
@@ -2417,8 +2453,23 @@
 				state.lastDebrisSurgeAt = now;
 
 				const index = Math.floor(Math.random() * state.pollutionLevels.length);
+				if (state.boomActive) {
+					state.blockedTrashCount += 1;
+					state.score += 2;
+					state.bonusPoints += 2;
+					const surgeSpot = pollutionSpots[index];
+					floatPoints("+2 blocked", surgeSpot.offsetLeft + 6, surgeSpot.offsetTop - 2, "#b07a1b");
+					showScenePopup("Trash Boom blocked debris! +2");
+					updateHUD();
+					return;
+				}
 				const debrisAmount = 12 * amountMultiplier;
-				state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + debrisAmount);
+				if (state.initialTrashCleared) {
+					// Post-initial trash is capped so two filter uses can clear it.
+					state.pollutionLevels[index] = Math.min(36, state.pollutionLevels[index] + debrisAmount);
+				} else {
+					state.pollutionLevels[index] = Math.min(100, state.pollutionLevels[index] + debrisAmount);
+				}
 				state.score = Math.max(0, state.score - 4);
 				const surgeSpot = pollutionSpots[index];
 				surgeSpot.classList.add("active");
@@ -2510,6 +2561,32 @@
 				const toolKey = tool.dataset.tool;
 				const baseLabel = tool.dataset.label;
 				const isUnlocked = state.unlockedTools[toolKey];
+
+				if (toolKey === "boom") {
+					if (!isUnlocked) {
+						tool.textContent = `${baseLabel} (locked)`;
+						tool.disabled = true;
+						tool.classList.remove("ready");
+						return;
+					}
+					if (state.boomActive) {
+						tool.textContent = `${baseLabel} (active • blocked ${state.blockedTrashCount})`;
+						tool.disabled = true;
+						tool.classList.add("ready");
+						return;
+					}
+					const need = Math.max(0, 25 - state.score);
+					if (need > 0) {
+						tool.textContent = `${baseLabel} (need ${need})`;
+						tool.disabled = true;
+						tool.classList.remove("ready");
+						return;
+					}
+					tool.textContent = `${baseLabel} (ready)`;
+					tool.disabled = state.gameEnded;
+					tool.classList.add("ready");
+					return;
+				}
 
 				if (toolKey === "tree") {
 					if (!isUnlocked || state.gameEnded) {
@@ -2627,6 +2704,32 @@
 				playCelebrationMusic();
 			}
 		}
+
+		function maybeUnlockBoomTool() {
+			if (!state.region || state.gameEnded || state.unlockedTools.boom) return;
+			const allAnimalsSaved = Object.values(state.animalRescued).every(Boolean);
+			const allTrashFiltered = state.pollutionLevels.every((level) => level <= 0.01);
+			if (!allAnimalsSaved || !allTrashFiltered) return;
+			state.unlockedTools.boom = true;
+			showScenePopup("Defense unlocked: Trash Boom available for 25 points.");
+			setStatus("New option unlocked: buy Trash Boom for 25 points to block incoming debris (+2 each).");
+			updateToolButtons();
+		}
+
+		function purchaseBoomTool() {
+			if (!state.unlockedTools.boom || state.boomActive || state.gameEnded) return;
+			if (state.score < 25) {
+				setStatus(`Need ${25 - state.score} more points to buy Trash Boom.`);
+				return;
+			}
+			state.score -= 25;
+			state.boomActive = true;
+			cleanSound(860);
+			showScenePopup("Trash Boom deployed! Incoming debris will be blocked.");
+			setStatus("Trash Boom active: each blocked trash piece gives +2 bonus points.");
+			updateHUD();
+			updateToolButtons();
+		}
 		function animalSound(kind) {
 			if (kind === "frog") tone(260, 0.12, "square");
 			else if (kind === "bird") tone(220, 0.11, "square");
@@ -2660,6 +2763,7 @@
 			updateEnvironment(avgPollution);
 			updatePhase();
 			updateHUD();
+			maybeUnlockBoomTool();
 			evaluateEndConditions();
 		}
 
@@ -2710,7 +2814,7 @@
 			animalEls.forEach((animal) => {
 				const key = animal.dataset.animal;
 				const health = state.animalHealth[key] ?? 0;
-				const localReady = health >= state.region.animalUnlock;
+				const localReady = state.initialTrashCleared && health >= state.region.animalUnlock;
 				if (localReady) {
 					animal.classList.add("ready");
 					animal.style.filter = "";
@@ -2743,6 +2847,9 @@
 			if (avgPollution > 75) setStatus("The river is stressed. Direct rain and prepare filters.");
 			if (state.phase === "filter") setStatus("Filters unlocked. Drag tools onto polluted spots.");
 			if (state.phase === "animal") setStatus("Wildlife is responsive. Tap animals to rescue and score.");
+			if (state.phase === "filter" && !state.initialTrashCleared && state.quality >= state.region.animalUnlock) {
+				setStatus("Clear all 4 starting trash spots before animals can be rescued.");
+			}
 		}
 
 		function updatePhase() {
@@ -2756,7 +2863,7 @@
 				setStatus("Plant Filter unlocked. Manage charges and cooldown before time runs out.");
 				updateToolButtons();
 			}
-			if (state.quality >= state.region.animalUnlock && state.phase !== "animal") {
+			if (state.initialTrashCleared && state.quality >= state.region.animalUnlock && state.phase !== "animal") {
 				state.phase = "animal";
 				phaseMsg.textContent = "Phase 3: Wildlife recovery — tap animals for rescue bonuses.";
 			}
@@ -3035,8 +3142,10 @@
 			state.actionsUsed = 0;
 			state.gameEnded = false;
 			state.pollutionLevels = [100, 100, 100, 100];
+			state.boomActive = false;
+			state.blockedTrashCount = 0;
 			state.animalHealth = { fish: 0, otter: 0, frog: 0, bird: 0 };
-			state.unlockedTools = { plant: false, net: false, tree: false };
+			state.unlockedTools = { plant: false, net: false, tree: false, boom: false };
 			state.filterCharges = {
 				plant: state.region.filterCharges.plant,
 				net: state.region.filterCharges.net
@@ -3252,7 +3361,14 @@
 		});
 
 		tools.forEach((tool) => {
+			if (tool.dataset.tool === "boom") {
+				tool.addEventListener("click", () => purchaseBoomTool());
+			}
 			tool.addEventListener("dragstart", (event) => {
+				if (tool.dataset.tool === "boom") {
+					event.preventDefault();
+					return;
+				}
 				if (state.gameEnded) {
 					event.preventDefault();
 					return;
