@@ -2260,6 +2260,8 @@
 			musicIntervalId: null,
 			celebrationMusicPlaying: false,
 			boomActive: false,
+			boomExpiresAt: 0,
+			boomExpiryTimeoutId: null,
 			blockedTrashCount: 0,
 			milestonesShown: [],
 			highScores: [],
@@ -2570,7 +2572,8 @@
 						return;
 					}
 					if (state.boomActive) {
-						tool.textContent = `${baseLabel} (active • blocked ${state.blockedTrashCount})`;
+						const secondsLeft = Math.max(0, Math.ceil((state.boomExpiresAt - now) / 1000));
+						tool.textContent = `${baseLabel} (active ${secondsLeft}s • blocked ${state.blockedTrashCount})`;
 						tool.disabled = true;
 						tool.classList.add("ready");
 						return;
@@ -2716,6 +2719,25 @@
 			updateToolButtons();
 		}
 
+		function clearBoomExpiryTimer() {
+			if (state.boomExpiryTimeoutId) {
+				clearTimeout(state.boomExpiryTimeoutId);
+				state.boomExpiryTimeoutId = null;
+			}
+		}
+
+		function deactivateBoom(expired = false) {
+			if (!state.boomActive) return;
+			state.boomActive = false;
+			state.boomExpiresAt = 0;
+			clearBoomExpiryTimer();
+			if (expired && !state.gameEnded) {
+				showScenePopup("Trash Boom expired. Rebuy for 25 points.");
+				setStatus("Trash Boom expired. Rebuy for 25 points to block more debris.");
+			}
+			updateToolButtons();
+		}
+
 		function purchaseBoomTool() {
 			if (!state.unlockedTools.boom || state.boomActive || state.gameEnded) return;
 			if (state.score < 25) {
@@ -2724,9 +2746,12 @@
 			}
 			state.score -= 25;
 			state.boomActive = true;
+			state.boomExpiresAt = Date.now() + 8000;
+			clearBoomExpiryTimer();
+			state.boomExpiryTimeoutId = setTimeout(() => deactivateBoom(true), 8000);
 			cleanSound(860);
-			showScenePopup("Trash Boom deployed! Incoming debris will be blocked.");
-			setStatus("Trash Boom active: each blocked trash piece gives +2 bonus points.");
+			showScenePopup("Trash Boom deployed for 8s! Incoming debris will be blocked.");
+			setStatus("Trash Boom active for 8 seconds: each blocked trash piece gives +2 bonus points.");
 			updateHUD();
 			updateToolButtons();
 		}
@@ -2935,6 +2960,10 @@
 					}, 260);
 				}
 				recalcQuality();
+				if (!state.initialTrashCleared && state.pollutionLevels.every((level) => level <= 0)) {
+					state.initialTrashCleared = true;
+					showScenePopup("Initial cleanup complete! Animals can now be rescued.");
+				}
 				if (!state.allTrashPromptShown && state.pollutionLevels.every((level) => level <= 0)) {
 					state.allTrashPromptShown = true;
 					showScenePopup("Hurry and rescue the animals!");
@@ -3074,6 +3103,7 @@
 		function endRegion(win, reason) {
 			if (state.gameEnded) return;
 			state.gameEnded = true;
+			clearBoomExpiryTimer();
 			if (!win) {
 				stopCelebrationMusic();
 			}
@@ -3143,6 +3173,8 @@
 			state.gameEnded = false;
 			state.pollutionLevels = [100, 100, 100, 100];
 			state.boomActive = false;
+			state.boomExpiresAt = 0;
+			clearBoomExpiryTimer();
 			state.blockedTrashCount = 0;
 			state.animalHealth = { fish: 0, otter: 0, frog: 0, bird: 0 };
 			state.unlockedTools = { plant: false, net: false, tree: false, boom: false };
@@ -3154,6 +3186,7 @@
 			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
 			state.phase = "rain";
 			state.allTrashPromptShown = false;
+			state.initialTrashCleared = false;
 			state.lastDebrisSurgeAt = 0;
 			state.milestonesShown = [];
 			while (plantedTrees.length) {
@@ -3241,6 +3274,7 @@
 		function goToMenu() {
 			clearInterval(state.timerId);
 			state.timerId = null;
+			clearBoomExpiryTimer();
 			stopCelebrationMusic();
 			stopTwists();
 			state.phase = "idle";
