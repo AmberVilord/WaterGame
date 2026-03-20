@@ -2813,8 +2813,8 @@
 			state.quality = Math.max(0, Math.min(100, rainFactor + cleanupFactor + extraRainBonus + wildlifeRecoveryBonus));
 			updateAnimalHealth();
 			checkToolUnlocks();
-			updateEnvironment(avgPollution);
 			updatePhase();
+			updateEnvironment(avgPollution);
 			updateHUD();
 			maybeUnlockBoomTool();
 			evaluateEndConditions();
@@ -3015,6 +3015,7 @@
 				if (!state.initialTrashCleared && state.pollutionLevels.every((level) => level <= 0)) {
 					state.initialTrashCleared = true;
 					showScenePopup("Initial cleanup complete! Animals can now be rescued.");
+					recalcQuality();
 				}
 				if (!state.allTrashPromptShown && state.pollutionLevels.every((level) => level <= 0)) {
 					state.allTrashPromptShown = true;
