@@ -2277,6 +2277,7 @@
 			pendingRegion: null,
 			allTrashPromptShown: false,
 			initialTrashCleared: false,
+			surgeSpotPending: [false, false, false, false],
 			twistIntervalId: null,
 			lastDebrisSurgeAt: 0,
 			musicIntervalId: null,
@@ -2493,6 +2494,8 @@
 					return;
 				}
 				const debrisAmount = 12 * amountMultiplier;
+				// Mark spot as needing at least 1 filter before it can be cleared.
+				state.surgeSpotPending[index] = true;
 				if (state.initialTrashCleared) {
 					// Post-initial trash is capped so two filter uses can clear it.
 					state.pollutionLevels[index] = Math.min(36, state.pollutionLevels[index] + debrisAmount);
@@ -2737,9 +2740,7 @@
 
 		function maybeUnlockBoomTool() {
 			if (!state.region || state.gameEnded || state.unlockedTools.boom) return;
-			const allAnimalsSaved = Object.values(state.animalRescued).every(Boolean);
-			const allTrashFiltered = state.pollutionLevels.every((level) => level <= 0.01);
-			if (!allAnimalsSaved || !allTrashFiltered) return;
+			if (!state.initialTrashCleared) return;
 			state.unlockedTools.boom = true;
 			showScenePopup("Defense unlocked: Trash Boom available for 25 points.");
 			setStatus("New option unlocked: buy Trash Boom for 25 points to block incoming debris (+2 each).");
@@ -2861,17 +2862,23 @@
 				const level = state.pollutionLevels[index];
 				spot.style.opacity = level <= 0 ? "0" : "0.92";
 				spot.style.transform = `scale(${0.65 + level / 160})`;
-				// Show filter-hit counter badge on initial 4 spots while they still need filtering
-				if (index < 4 && !state.initialTrashCleared && state.region && level > 0) {
-					const required = state.region.initialTrashFiltersRequired || 1;
-					const hits = state.initialTrashFilterHits[index] || 0;
+				// Show filter-hit counter badge on initial 4 spots (and surge-pending spots)
+				const showInitialBadge = index < 4 && !state.initialTrashCleared && state.region && level > 0;
+				const showSurgeBadge = index < 4 && state.initialTrashCleared && state.surgeSpotPending[index] && level > 0;
+				if (showInitialBadge || showSurgeBadge) {
 					let badge = spot.querySelector(".filter-count");
 					if (!badge) {
 						badge = document.createElement("span");
 						badge.className = "filter-count";
 						spot.appendChild(badge);
 					}
-					badge.textContent = `${hits}/${required}`;
+					if (showSurgeBadge) {
+						badge.textContent = "surge: filter 1x";
+					} else {
+						const required = state.region.initialTrashFiltersRequired || 1;
+						const hits = state.initialTrashFilterHits[index] || 0;
+						badge.textContent = `${hits}/${required}`;
+					}
 				} else {
 					const badge = spot.querySelector(".filter-count");
 					if (badge) badge.remove();
@@ -2976,6 +2983,13 @@
 				const progress = Math.min(initialHitsRequired, state.initialTrashFilterHits[index]);
 				setStatus(`Starting trash spot progress: ${progress}/${initialHitsRequired} filter uses.`);
 			}
+			// Surge gate: first filter application on a surge spot clears the pending flag;
+			// the gate in the interval will then reset pollution so a second filter removes it.
+			const wasSurgePending = state.initialTrashCleared && index < 4 && state.surgeSpotPending[index];
+			if (wasSurgePending) {
+				state.surgeSpotPending[index] = false;
+				setStatus("Surge trash started — filter once more to fully clear this spot.");
+			}
 			const before = state.pollutionLevels[index];
 			if (before <= 0) return;
 			if (!consumeAction()) return;
@@ -3003,6 +3017,16 @@
 					if (isInitialSpotLocked && state.initialTrashFilterHits[index] < initialHitsRequired) {
 						// Prevent full clear until this starting spot has required filter uses.
 						state.pollutionLevels[index] = 1;
+						recalcQuality();
+						if (tick >= steps) {
+							clearInterval(interval);
+							spotEl.classList.remove("cleaning");
+						}
+						return;
+					}
+					if (wasSurgePending) {
+						// First filter registered; reset to a clearable level for the next application.
+						state.pollutionLevels[index] = 18;
 						recalcQuality();
 						if (tick >= steps) {
 							clearInterval(interval);
@@ -3247,6 +3271,7 @@
 			state.allTrashPromptShown = false;
 			state.initialTrashCleared = false;
 			state.initialTrashFilterHits = [0, 0, 0, 0];
+			state.surgeSpotPending = [false, false, false, false];
 			state.lastDebrisSurgeAt = 0;
 			state.milestonesShown = [];
 			while (plantedTrees.length) {
