@@ -952,6 +952,7 @@
 		.pollution.active {
 			opacity: 0.9;
 			transform: scale(1);
+			cursor: pointer;
 		}
 
 		.pollution.cleaning {
@@ -2759,6 +2760,11 @@
 			tone(980, 0.05, "square");
 			setTimeout(() => tone(760, 0.05, "triangle"), 40);
 		}
+		function playLossSound() {
+			tone(392, 0.12, "sawtooth");
+			setTimeout(() => tone(330, 0.16, "triangle"), 110);
+			setTimeout(() => tone(262, 0.22, "sine"), 240);
+		}
 		function stopCelebrationMusic() {
 			if (state.musicIntervalId) {
 				clearInterval(state.musicIntervalId);
@@ -2766,13 +2772,13 @@
 			}
 			state.celebrationMusicPlaying = false;
 		}
-		function playCelebrationMusic() {
-			if (state.celebrationMusicPlaying || state.gameEnded) return;
+		function playCelebrationMusic(force = false) {
+			if (state.celebrationMusicPlaying || (state.gameEnded && !force)) return;
 			state.celebrationMusicPlaying = true;
 			const melody = [523, 659, 784, 659, 880, 988, 784, 659];
 			let step = 0;
 			state.musicIntervalId = setInterval(() => {
-				if (!state.celebrationMusicPlaying || state.gameEnded) return;
+				if (!state.celebrationMusicPlaying) return;
 				const note = melody[step % melody.length];
 				tone(note, 0.18, "sine");
 				if (step % 2 === 0) {
@@ -2780,15 +2786,12 @@
 				}
 				step += 1;
 			}, 260);
-			showScenePopup("All animals saved and trash cleared! 🎵");
+			if (!force) {
+				showScenePopup("All animals saved and trash cleared! 🎵");
+			}
 		}
 		function maybeStartCelebrationMusic() {
-			if (!state.region || state.gameEnded) return;
-			const allAnimalsSaved = Object.values(state.animalRescued).every(Boolean);
-			const allTrashFiltered = state.pollutionLevels.every((level) => level <= 0.01);
-			if (allAnimalsSaved && allTrashFiltered) {
-				playCelebrationMusic();
-			}
+			return;
 		}
 
 		function maybeUnlockBoomTool() {
@@ -2956,7 +2959,7 @@
 			if (avgPollution > 75) setStatus("The river is stressed. Direct rain and prepare filters.");
 			if (state.phase === "filter") setStatus("Filters unlocked. Drag tools onto polluted spots.");
 			if (state.phase === "animal") setStatus("Wildlife is responsive. Tap animals to rescue and score.");
-			if (state.phase === "filter" && !state.initialTrashCleared && state.quality >= state.region.animalUnlock) {
+			if (state.phase === "filter" && !state.initialTrashCleared) {
 				setStatus("Clear all 4 starting trash spots before animals can be rescued.");
 			}
 		}
@@ -2972,7 +2975,7 @@
 				setStatus("Plant Filter unlocked. Manage charges and cooldown before time runs out.");
 				updateToolButtons();
 			}
-			if (state.initialTrashCleared && state.quality >= state.region.animalUnlock && state.phase !== "animal") {
+			if (state.initialTrashCleared && state.phase !== "animal") {
 				state.phase = "animal";
 				phaseMsg.textContent = "Phase 3: Wildlife recovery — tap animals for rescue bonuses.";
 			}
@@ -3004,6 +3007,104 @@
 			if (canUseTool("net")) return "net";
 			if (canUseTool("plant")) return "plant";
 			return null;
+		}
+
+		function findNearestInteractiveElement(clientX, clientY, candidates, maxDistance) {
+			let bestElement = null;
+			let bestDistance = Infinity;
+
+			candidates.forEach((element) => {
+				const rect = element.getBoundingClientRect();
+				const centerX = rect.left + rect.width / 2;
+				const centerY = rect.top + rect.height / 2;
+				const dx = clientX - centerX;
+				const dy = clientY - centerY;
+				const distance = Math.hypot(dx, dy);
+				if (distance <= maxDistance && distance < bestDistance) {
+					bestElement = element;
+					bestDistance = distance;
+				}
+			});
+
+			return bestElement ? { element: bestElement, distance: bestDistance } : null;
+		}
+
+		function handleSceneActionAt(clientX, clientY, eventTarget = null) {
+			if (state.gameEnded) return false;
+			if (eventTarget?.closest("#inventory") || eventTarget?.closest("#cloud") || eventTarget?.closest("#endOverlay")) {
+				return false;
+			}
+
+			const elements = document.elementsFromPoint(clientX, clientY);
+			const exactReadyAnimal = elements.find((element) =>
+				scene.contains(element) &&
+				element.classList?.contains("animal") &&
+				element.classList.contains("ready") &&
+				!element.classList.contains("rescued")
+			);
+
+			const exactActivePollution = elements.find((element) => {
+				if (!scene.contains(element) || !element.classList?.contains("pollution")) return false;
+				const spotIndex = Number(element.dataset.spot);
+				return Number.isFinite(spotIndex) && (state.pollutionLevels[spotIndex] ?? 0) > 0.01;
+			});
+
+			if (exactReadyAnimal && !exactActivePollution) {
+				handleAnimalTap(exactReadyAnimal);
+				return true;
+			}
+
+			if (exactActivePollution && !exactReadyAnimal) {
+				if (state.phase === "idle" || state.phase === "rain") return false;
+				const toolType = getUsableFilterTool();
+				if (!toolType) {
+					setStatus("No available filter ready. Wait for cooldown or use another tool.");
+					return true;
+				}
+				applyFilter(exactActivePollution, toolType);
+				evaluateEndConditions();
+				return true;
+			}
+
+			const nearestAnimal = findNearestInteractiveElement(
+				clientX,
+				clientY,
+				animalEls.filter((animal) => animal.classList.contains("ready") && !animal.classList.contains("rescued")),
+				44
+			);
+
+			let nearestPollution = null;
+			if (state.phase !== "idle" && state.phase !== "rain") {
+				nearestPollution = findNearestInteractiveElement(
+					clientX,
+					clientY,
+					pollutionSpots.filter((spot) => {
+						const spotIndex = Number(spot.dataset.spot);
+						return Number.isFinite(spotIndex) && (state.pollutionLevels[spotIndex] ?? 0) > 0.01;
+					}),
+					58
+				);
+			}
+
+			if (!nearestAnimal && !nearestPollution) return false;
+
+			if (nearestAnimal && (!nearestPollution || nearestAnimal.distance <= nearestPollution.distance)) {
+				handleAnimalTap(nearestAnimal.element);
+				return true;
+			}
+
+			const activePollution = nearestPollution?.element;
+			if (!activePollution) return false;
+
+			const toolType = getUsableFilterTool();
+			if (!toolType) {
+				setStatus("No available filter ready. Wait for cooldown or use another tool.");
+				return true;
+			}
+
+			applyFilter(activePollution, toolType);
+			evaluateEndConditions();
+			return true;
 		}
 
 		function toggleSelectedTool(toolKey) {
@@ -3227,9 +3328,7 @@
 			if (state.gameEnded) return;
 			state.gameEnded = true;
 			clearBoomExpiryTimer();
-			if (!win) {
-				stopCelebrationMusic();
-			}
+			stopCelebrationMusic();
 			clearInterval(state.timerId);
 			state.timerId = null;
 			stopTwists();
@@ -3243,6 +3342,7 @@
 				if (endCard) endCard.classList.remove("win-celebration");
 				endOverlay.classList.remove("win-state");
 				animalEls.forEach((animal) => animal.classList.add("distressed"));
+				playLossSound();
 			}
 			buildResults(win, reason);
 			prepareHighScoreEntry();
@@ -3549,7 +3649,8 @@
 		});
 
 		pollutionSpots.forEach((spot) => {
-			spot.addEventListener("click", () => {
+			spot.addEventListener("click", (event) => {
+				event.stopPropagation();
 				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
 				const toolType = getUsableFilterTool();
 				if (!toolType) {
@@ -3599,8 +3700,15 @@
 			plantBonusTree(event.clientX, event.clientY);
 		});
 
+		scene.addEventListener("click", (event) => {
+			handleSceneActionAt(event.clientX, event.clientY, event.target);
+		});
+
 		animalEls.forEach((animal) => {
-			animal.addEventListener("click", () => handleAnimalTap(animal));
+			animal.addEventListener("click", (event) => {
+				event.stopPropagation();
+				handleAnimalTap(animal);
+			});
 		});
 
 		state.highScores = loadHighScores();
