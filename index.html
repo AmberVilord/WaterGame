@@ -962,6 +962,23 @@
 			animation: trash-pop 0.28s ease-out forwards;
 		}
 
+		.pollution .filter-count {
+			position: absolute;
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			background: rgba(12, 66, 94, 0.92);
+			color: #fff;
+			font-size: 0.6rem;
+			font-weight: 800;
+			padding: 1px 5px;
+			border-radius: 6px;
+			white-space: nowrap;
+			pointer-events: none;
+			z-index: 12;
+			letter-spacing: 0.02em;
+		}
+
 		.scene-popup {
 			position: absolute;
 			left: 50%;
@@ -2154,6 +2171,7 @@
 				label: "Easy",
 				initialTrashFiltersRequired: 3,
 				timeMultiplier: 1.2,
+				timeOffset: -60,
 				actionMultiplier: 1.12,
 				targetQualityDelta: -10,
 				rainUnlockDelta: -5,
@@ -2283,7 +2301,7 @@
 				...base,
 				difficultyKey,
 				difficultyLabel: mode.label,
-				timeLimit: Math.max(45, Math.round(base.timeLimit * mode.timeMultiplier)),
+				timeLimit: Math.max(45, Math.round(base.timeLimit * mode.timeMultiplier) + (mode.timeOffset ?? 0)),
 				actionLimit: Math.max(45, Math.round(base.actionLimit * mode.actionMultiplier)),
 				targetQuality,
 				rainUnlock: Math.max(8, base.rainUnlock + mode.rainUnlockDelta),
@@ -2843,6 +2861,21 @@
 				const level = state.pollutionLevels[index];
 				spot.style.opacity = level <= 0 ? "0" : "0.92";
 				spot.style.transform = `scale(${0.65 + level / 160})`;
+				// Show filter-hit counter badge on initial 4 spots while they still need filtering
+				if (index < 4 && !state.initialTrashCleared && state.region && level > 0) {
+					const required = state.region.initialTrashFiltersRequired || 1;
+					const hits = state.initialTrashFilterHits[index] || 0;
+					let badge = spot.querySelector(".filter-count");
+					if (!badge) {
+						badge = document.createElement("span");
+						badge.className = "filter-count";
+						spot.appendChild(badge);
+					}
+					badge.textContent = `${hits}/${required}`;
+				} else {
+					const badge = spot.querySelector(".filter-count");
+					if (badge) badge.remove();
+				}
 			});
 
 			animalEls.forEach((animal) => {
