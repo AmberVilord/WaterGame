@@ -1982,7 +1982,7 @@
 		</section>
 		<footer class="cw-footer" aria-label="charity water links">
 			<span>Support the mission:</span>
-			<a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">charity: water</a>
+			<a href="https://www.charitywater.org/about" target="_blank" rel="noopener noreferrer">charity: water</a>
 			<span>•</span>
 			<a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate</a>
 		</footer>
@@ -2870,7 +2870,7 @@
 			animalEls.forEach((animal) => {
 				const key = animal.dataset.animal;
 				const health = state.animalHealth[key] ?? 0;
-				const localReady = state.initialTrashCleared && health >= state.region.animalUnlock;
+				const localReady = state.initialTrashCleared && state.phase === "animal";
 				if (localReady) {
 					animal.classList.add("ready");
 					animal.style.filter = "";
