@@ -2216,8 +2216,8 @@
 		};
 
 		const toolsConfig = {
-			plant: { cleanup: 18, score: 14, tone: 620 },
-			net: { cleanup: 54, score: 22, tone: 760 }
+			plant: { cleanup: 100, score: 14, tone: 620, hitValue: 1 },
+			net: { cleanup: 100, score: 22, tone: 760, hitValue: 2 }
 		};
 
 		const scoreMilestones = [
@@ -2862,27 +2862,9 @@
 				const level = state.pollutionLevels[index];
 				spot.style.opacity = level <= 0 ? "0" : "0.92";
 				spot.style.transform = `scale(${0.65 + level / 160})`;
-				// Show filter-hit counter badge on initial 4 spots (and surge-pending spots)
-				const showInitialBadge = index < 4 && !state.initialTrashCleared && state.region && level > 0;
-				const showSurgeBadge = index < 4 && state.initialTrashCleared && state.surgeSpotPending[index] && level > 0;
-				if (showInitialBadge || showSurgeBadge) {
-					let badge = spot.querySelector(".filter-count");
-					if (!badge) {
-						badge = document.createElement("span");
-						badge.className = "filter-count";
-						spot.appendChild(badge);
-					}
-					if (showSurgeBadge) {
-						badge.textContent = "surge: filter 1x";
-					} else {
-						const required = state.region.initialTrashFiltersRequired || 1;
-						const hits = state.initialTrashFilterHits[index] || 0;
-						badge.textContent = `${hits}/${required}`;
-					}
-				} else {
-					const badge = spot.querySelector(".filter-count");
-					if (badge) badge.remove();
-				}
+				// Remove any badge elements left over from previous sessions.
+				const badge = spot.querySelector(".filter-count");
+				if (badge) badge.remove();
 			});
 
 			animalEls.forEach((animal) => {
@@ -2978,17 +2960,16 @@
 			const index = Number(spotEl.dataset.spot);
 			const initialHitsRequired = state.region?.initialTrashFiltersRequired || 1;
 			const isInitialSpotLocked = !state.initialTrashCleared && index >= 0 && index < 4;
+			const hitVal = toolsConfig[toolType]?.hitValue || 1;
 			if (isInitialSpotLocked) {
-				state.initialTrashFilterHits[index] += 1;
-				const progress = Math.min(initialHitsRequired, state.initialTrashFilterHits[index]);
-				setStatus(`Starting trash spot progress: ${progress}/${initialHitsRequired} filter uses.`);
+				state.initialTrashFilterHits[index] = Math.min(
+					initialHitsRequired,
+					state.initialTrashFilterHits[index] + hitVal
+				);
 			}
-			// Surge gate: first filter application on a surge spot clears the pending flag;
-			// the gate in the interval will then reset pollution so a second filter removes it.
-			const wasSurgePending = state.initialTrashCleared && index < 4 && state.surgeSpotPending[index];
-			if (wasSurgePending) {
+			// Clear surge pending flag when the player filters any surge spot.
+			if (state.initialTrashCleared && index < 4 && state.surgeSpotPending[index]) {
 				state.surgeSpotPending[index] = false;
-				setStatus("Surge trash started — filter once more to fully clear this spot.");
 			}
 			const before = state.pollutionLevels[index];
 			if (before <= 0) return;
@@ -3015,23 +2996,11 @@
 				state.pollutionLevels[index] = Math.max(0, state.pollutionLevels[index] - amountPerStep);
 				if (!poppedFinal && state.pollutionLevels[index] <= 0.01) {
 					if (isInitialSpotLocked && state.initialTrashFilterHits[index] < initialHitsRequired) {
-						// Prevent full clear until this starting spot has required filter uses.
-						state.pollutionLevels[index] = 1;
+						// Not enough filter uses yet — reset spot so another round is needed.
+						state.pollutionLevels[index] = 100;
 						recalcQuality();
-						if (tick >= steps) {
-							clearInterval(interval);
-							spotEl.classList.remove("cleaning");
-						}
-						return;
-					}
-					if (wasSurgePending) {
-						// First filter registered; reset to a clearable level for the next application.
-						state.pollutionLevels[index] = 18;
-						recalcQuality();
-						if (tick >= steps) {
-							clearInterval(interval);
-							spotEl.classList.remove("cleaning");
-						}
+						clearInterval(interval);
+						spotEl.classList.remove("cleaning");
 						return;
 					}
 					state.pollutionLevels[index] = 0;
