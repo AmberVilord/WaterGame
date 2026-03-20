@@ -1801,7 +1801,7 @@
 					<p class="difficulty-title">Difficulty Mode</p>
 					<div class="difficulty-grid" id="difficultyGrid">
 						<button class="difficulty-btn" data-difficulty="easy" type="button">Easy<small>More time and forgiving goals</small></button>
-						<button class="difficulty-btn active" data-difficulty="normal" type="button">Normal<small>Balanced rules</small></button>
+						<button class="difficulty-btn active" data-difficulty="normal" type="button">Medium<small>Balanced rules</small></button>
 						<button class="difficulty-btn" data-difficulty="hard" type="button">Hard<small>Tight timer and tougher win goals</small></button>
 					</div>
 				</div>
@@ -1811,12 +1811,12 @@
 						<button class="close-instructions" id="closeInstructionsBtn" type="button" aria-label="Close instructions">×</button>
 						<h2>Region Instructions</h2>
 						<p id="instructionsRegionLabel">Selected Region</p>
-						<p id="instructionsDifficultyLabel">Difficulty: Normal</p>
+						<p id="instructionsDifficultyLabel">Difficulty: Medium</p>
 						<p id="instructionsObjectiveLabel" class="instructions-objective">Select a region and difficulty to preview goals.</p>
 						<ul class="instructions-list">
 							<li>Tap/drag cloud to direct rain and raise water quality.</li>
 							<li>When filters unlock, drag tools onto polluted spots.</li>
-							<li>Tools have limited charges and cooldowns, so place carefully.</li>
+							<li id="instructionsTrashRule">The first 4 trash spots each require multiple filter uses before they clear.</li>
 							<li>Rescue animals once local water health crosses threshold.</li>
 							<li>After all rescues, plant trees on grass for +10 points each until the timer ends.</li>
 						</ul>
@@ -1833,7 +1833,7 @@
 				<div class="title-metrics">
 					<div class="top-title" id="regionTitle">River Guardians</div>
 					<div class="hud" id="hud">
-						<div class="pill" id="difficultyPill">Difficulty: Normal</div>
+						<div class="pill" id="difficultyPill">Difficulty: Medium</div>
 						<div class="pill" id="scorePill">Score: 0</div>
 						<div class="pill" id="qualityPill">Quality: 0%</div>
 						<div class="pill" id="waterPill">Water: 0%</div>
@@ -1980,6 +1980,7 @@
 		const instructionsRegionLabel = document.getElementById("instructionsRegionLabel");
 		const instructionsDifficultyLabel = document.getElementById("instructionsDifficultyLabel");
 		const instructionsObjectiveLabel = document.getElementById("instructionsObjectiveLabel");
+		const instructionsTrashRule = document.getElementById("instructionsTrashRule");
 		const startRegionFromInstructions = document.getElementById("startRegionFromInstructions");
 		const difficultyButtons = Array.from(document.querySelectorAll(".difficulty-btn"));
 		const regionButtons = Array.from(document.querySelectorAll(".region-btn"));
@@ -2151,6 +2152,7 @@
 		const difficulties = {
 			easy: {
 				label: "Easy",
+				initialTrashFiltersRequired: 3,
 				timeMultiplier: 1.2,
 				actionMultiplier: 1.12,
 				targetQualityDelta: -10,
@@ -2164,7 +2166,8 @@
 				requiredTreeBonus: 0
 			},
 			normal: {
-				label: "Normal",
+				label: "Medium",
+				initialTrashFiltersRequired: 4,
 				timeMultiplier: 1,
 				actionMultiplier: 1,
 				targetQualityDelta: 0,
@@ -2179,6 +2182,7 @@
 			},
 			hard: {
 				label: "Hard",
+				initialTrashFiltersRequired: 6,
 				timeMultiplier: 0.8,
 				actionMultiplier: 0.88,
 				targetQualityDelta: 8,
@@ -2263,6 +2267,7 @@
 			boomExpiresAt: 0,
 			boomExpiryTimeoutId: null,
 			blockedTrashCount: 0,
+			initialTrashFilterHits: [0, 0, 0, 0],
 			milestonesShown: [],
 			highScores: [],
 			pendingHighScoreValue: null
@@ -2292,6 +2297,7 @@
 					plant: Math.round(base.filterCooldownMs.plant * mode.cooldownMultiplier),
 					net: Math.round(base.filterCooldownMs.net * mode.cooldownMultiplier)
 				},
+				initialTrashFiltersRequired: mode.initialTrashFiltersRequired,
 				winRequirements: {
 					requiredRescues: mode.requiredRescues,
 					minHealthyAnimals: mode.minHealthyAnimals,
@@ -2326,8 +2332,11 @@
 			const selectedSetup = buildRegionWithDifficulty(state.pendingRegion, state.difficultyKey);
 			instructionsRegionLabel.textContent = `Region: ${selectedSetup.name}`;
 			instructionsDifficultyLabel.textContent = `Difficulty: ${selectedSetup.difficultyLabel}`;
+			if (instructionsTrashRule) {
+				instructionsTrashRule.textContent = `The first 4 trash spots each require ${selectedSetup.initialTrashFiltersRequired} filter uses before they clear.`;
+			}
 			if (instructionsObjectiveLabel) {
-				instructionsObjectiveLabel.textContent = `Win goals: ${selectedSetup.targetQuality}% quality, ${selectedSetup.winRequirements.requiredRescues} rescues, ${selectedSetup.winRequirements.minHealthyAnimals} healthy animals, ${selectedSetup.winRequirements.requiredTreeBonus} tree-bonus points. Time: ${selectedSetup.timeLimit}s. Actions: ${selectedSetup.actionLimit}.`;
+				instructionsObjectiveLabel.textContent = `Win goals: ${selectedSetup.targetQuality}% quality, ${selectedSetup.winRequirements.requiredRescues} rescues, ${selectedSetup.winRequirements.minHealthyAnimals} healthy animals, ${selectedSetup.winRequirements.requiredTreeBonus} tree-bonus points. Initial trash rule: ${selectedSetup.initialTrashFiltersRequired} filter uses per starting trash spot. Time: ${selectedSetup.timeLimit}s. Actions: ${selectedSetup.actionLimit}.`;
 			}
 			instructionsOverlay.style.display = "flex";
 		}
@@ -2927,6 +2936,13 @@
 				return;
 			}
 			const index = Number(spotEl.dataset.spot);
+			const initialHitsRequired = state.region?.initialTrashFiltersRequired || 1;
+			const isInitialSpotLocked = !state.initialTrashCleared && index >= 0 && index < 4;
+			if (isInitialSpotLocked) {
+				state.initialTrashFilterHits[index] += 1;
+				const progress = Math.min(initialHitsRequired, state.initialTrashFilterHits[index]);
+				setStatus(`Starting trash spot progress: ${progress}/${initialHitsRequired} filter uses.`);
+			}
 			const before = state.pollutionLevels[index];
 			if (before <= 0) return;
 			if (!consumeAction()) return;
@@ -2951,6 +2967,16 @@
 				tick += 1;
 				state.pollutionLevels[index] = Math.max(0, state.pollutionLevels[index] - amountPerStep);
 				if (!poppedFinal && state.pollutionLevels[index] <= 0.01) {
+					if (isInitialSpotLocked && state.initialTrashFilterHits[index] < initialHitsRequired) {
+						// Prevent full clear until this starting spot has required filter uses.
+						state.pollutionLevels[index] = 1;
+						recalcQuality();
+						if (tick >= steps) {
+							clearInterval(interval);
+							spotEl.classList.remove("cleaning");
+						}
+						return;
+					}
 					state.pollutionLevels[index] = 0;
 					poppedFinal = true;
 					trashPopSound();
@@ -3187,6 +3213,7 @@
 			state.phase = "rain";
 			state.allTrashPromptShown = false;
 			state.initialTrashCleared = false;
+			state.initialTrashFilterHits = [0, 0, 0, 0];
 			state.lastDebrisSurgeAt = 0;
 			state.milestonesShown = [];
 			while (plantedTrees.length) {
