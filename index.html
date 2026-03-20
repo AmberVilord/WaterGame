@@ -1227,6 +1227,13 @@
 			background: #ebf7ff;
 		}
 
+		.tool.selected {
+			border-style: solid;
+			border-color: #114c7a;
+			background: #d8efff;
+			box-shadow: 0 0 0 2px rgba(17, 76, 122, 0.16);
+		}
+
 		.tool[disabled] {
 			opacity: 0.45;
 			cursor: not-allowed;
@@ -2208,7 +2215,7 @@
 				rainUnlockDelta: 4,
 				animalUnlockDelta: 6,
 				rainImpactMultiplier: 0.92,
-				filterChargeDelta: -4,
+				filterChargeDelta: 1,
 				cooldownMultiplier: 1.25,
 				requiredRescues: 4,
 				minHealthyAnimals: 4,
@@ -2598,6 +2605,7 @@
 						tool.textContent = `${baseLabel} (locked)`;
 						tool.disabled = true;
 						tool.classList.remove("ready");
+						tool.classList.remove("selected");
 						return;
 					}
 					if (state.boomActive) {
@@ -2605,6 +2613,7 @@
 						tool.textContent = `${baseLabel} (active ${secondsLeft}s • blocked ${state.blockedTrashCount})`;
 						tool.disabled = true;
 						tool.classList.add("ready");
+						tool.classList.remove("selected");
 						return;
 					}
 					const need = Math.max(0, 25 - state.score);
@@ -2612,11 +2621,13 @@
 						tool.textContent = `${baseLabel} (need ${need})`;
 						tool.disabled = true;
 						tool.classList.remove("ready");
+						tool.classList.remove("selected");
 						return;
 					}
 					tool.textContent = `${baseLabel} (ready)`;
 					tool.disabled = state.gameEnded;
 					tool.classList.add("ready");
+					tool.classList.remove("selected");
 					return;
 				}
 
@@ -2625,11 +2636,13 @@
 						tool.textContent = `${baseLabel} (locked)`;
 						tool.disabled = true;
 						tool.classList.remove("ready");
+						tool.classList.remove("selected");
 						return;
 					}
 					tool.textContent = `${baseLabel} (ready)`;
 					tool.disabled = false;
 					tool.classList.add("ready");
+					tool.classList.toggle("selected", state.dragTool === toolKey);
 					return;
 				}
 
@@ -2640,6 +2653,8 @@
 					tool.textContent = `${baseLabel} (locked)`;
 					tool.disabled = true;
 					tool.classList.remove("ready");
+					tool.classList.remove("selected");
+					if (state.dragTool === toolKey) state.dragTool = null;
 					return;
 				}
 
@@ -2647,6 +2662,8 @@
 					tool.textContent = `${baseLabel} (depleted)`;
 					tool.disabled = true;
 					tool.classList.remove("ready");
+					tool.classList.remove("selected");
+					if (state.dragTool === toolKey) state.dragTool = null;
 					return;
 				}
 
@@ -2654,12 +2671,15 @@
 					tool.textContent = `${baseLabel} (${Math.ceil(cooldownLeft / 1000)}s cooldown)`;
 					tool.disabled = true;
 					tool.classList.remove("ready");
+					tool.classList.remove("selected");
+					if (state.dragTool === toolKey) state.dragTool = null;
 					return;
 				}
 
 				tool.textContent = `${baseLabel} (${chargesLeft} left)`;
 				tool.disabled = false;
 				tool.classList.add("ready");
+				tool.classList.toggle("selected", state.dragTool === toolKey);
 			});
 		}
 
@@ -2935,6 +2955,27 @@
 			rainSound();
 			floatPoints("+3", x, 145, "#0f63a0");
 			recalcQuality();
+		}
+
+		function getUsableFilterTool(preferredTool = state.dragTool) {
+			const canUseTool = (toolKey) => {
+				if (!toolKey || toolKey === "tree" || toolKey === "boom") return false;
+				if (!state.unlockedTools[toolKey]) return false;
+				if ((state.filterCharges[toolKey] ?? 0) <= 0) return false;
+				if (Date.now() < (state.filterCooldownUntil[toolKey] ?? 0)) return false;
+				return true;
+			};
+
+			if (canUseTool(preferredTool)) return preferredTool;
+			if (canUseTool("net")) return "net";
+			if (canUseTool("plant")) return "plant";
+			return null;
+		}
+
+		function toggleSelectedTool(toolKey) {
+			if (!toolKey || toolKey === "boom") return;
+			state.dragTool = state.dragTool === toolKey ? null : toolKey;
+			updateToolButtons();
 		}
 
 		function applyFilter(spotEl, toolType) {
@@ -3233,6 +3274,7 @@
 			state.filterCooldownUntil = { plant: 0, net: 0 };
 			state.animalRescued = { fish: false, otter: false, frog: false, bird: false };
 			state.phase = "rain";
+			state.dragTool = null;
 			state.allTrashPromptShown = false;
 			state.initialTrashCleared = false;
 			state.initialTrashFilterHits = [0, 0, 0, 0];
@@ -3447,6 +3489,11 @@
 		tools.forEach((tool) => {
 			if (tool.dataset.tool === "boom") {
 				tool.addEventListener("click", () => purchaseBoomTool());
+			} else {
+				tool.addEventListener("click", () => {
+					if (state.gameEnded || tool.disabled) return;
+					toggleSelectedTool(tool.dataset.tool);
+				});
 			}
 			tool.addEventListener("dragstart", (event) => {
 				if (tool.dataset.tool === "boom") {
@@ -3468,6 +3515,17 @@
 		});
 
 		pollutionSpots.forEach((spot) => {
+			spot.addEventListener("click", () => {
+				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
+				const toolType = getUsableFilterTool();
+				if (!toolType) {
+					setStatus("No available filter ready. Wait for cooldown or use another tool.");
+					return;
+				}
+				applyFilter(spot, toolType);
+				evaluateEndConditions();
+			});
+
 			spot.addEventListener("dragover", (event) => {
 				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
 				event.preventDefault();
@@ -3476,8 +3534,12 @@
 			spot.addEventListener("drop", (event) => {
 				if (state.phase === "idle" || state.phase === "rain" || state.gameEnded) return;
 				event.preventDefault();
-				const toolType = event.dataTransfer.getData("text/plain") || state.dragTool;
-				if (!toolType) return;
+				const droppedTool = event.dataTransfer.getData("text/plain") || state.dragTool;
+				const toolType = getUsableFilterTool(droppedTool);
+				if (!toolType) {
+					setStatus("No available filter ready. Wait for cooldown or use another tool.");
+					return;
+				}
 				if (toolType === "tree") {
 					setStatus("Drop tree saplings on grass areas.");
 					return;
